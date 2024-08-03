@@ -1,12 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
-    <h>home</h>
-</body>
-</html>
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div>
+    <div class="input-group">
+      
+            <select class="form-select"  aria-label="Example select with button addon" aria-placeholder="Select ticket type">
+            <option selected>Ticket type</option>
+            <option value="1">Account and Access</option>
+            <option value="2">Bug</option>
+            <option value="3">Incident report</option>
+            <option value="3">Service request</option>
+          </select>
+      
+        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="What issue are you having ?">
+      </div>
+</div>
+{% endblock %}
+
