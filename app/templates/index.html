@@ -3,19 +3,26 @@
 
 {% block content %}
 
-<div>
+<form class="flex flex-col gap-3 w-5/12">
+    <h1 class="text-3xl text-center">Have an issue ? submit a ticket here</h1>
+ 
+    
     <div class="input-group">
-      
-            <select class="form-select"  aria-label="Example select with button addon" aria-placeholder="Select ticket type">
-            <option selected>Ticket type</option>
+        
+            <select class="form-select w-2"  aria-label="Example select with button addon" aria-placeholder="Select ticket type" required>
+                <option selected disabled value="">Pick issue type</option>
             <option value="1">Account and Access</option>
             <option value="2">Bug</option>
             <option value="3">Incident report</option>
             <option value="3">Service request</option>
           </select>
       
-        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="What issue are you having ?">
+        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="What issue are you having ?" required>
       </div>
-</div>
+      <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="Add more detail about the issue here" rows="3" required></textarea>
+      <button type="submit" class="btn btn-primary">Submit</button>
+  
+    </form>
+
 {% endblock %}
 
