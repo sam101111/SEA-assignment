@@ -2,7 +2,7 @@
 
 
 {% block content %}
-{% set issues = [{"title": "Create ticket", "type": "Service request", "info": "a bug was found"}, {"title": "Create ticket", "type": "Account and Access", "info": "a bug was found"}, {"title": "Create ticket", "type": "bug", "info": "a bug was found"}]%}
+{% set issues = [{"id": 1,"title": "Create ticket", "type": "Service request", "info": "a bug was found"}, {"id": 2, "title": "Create ticket", "type": "Account and Access", "info": "a bug was found"}, {"id": 3, "title": "Create ticket", "type": "bug", "info": "a bug was found"}]%}
 <div class="flex flex-col gap-3 w-10/12">
     <div>
         <h1 class="text-3xl">Your tickets</h1>
@@ -41,17 +41,63 @@
 {% endif %}
 
 <div class="card">
-    <h5 class="card-header"><span class="badge {{tag}}">{{element.type}}</span> </h5>
+    <h5 class="card-header"> {{element.title}}</h5>
     <div class="card-body">
-      <h5 class="card-title">{{element.title}}</h5>
+      <h5 class="card-title"><span class="badge {{tag}}">{{element.type}}</span></h5>
       <p class="card-text">{{element.info}}</p>
-      <a href="#" class="btn btn-primary">Update</a>
-      <a href="#" class="btn btn-danger">Resolve</a>
+      <button  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal">Update</button>
+      <button onclick="onResolve()" class="btn btn-danger">Resolve</button>
     </div>
   
 </div>
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModal" aria-hidden="true">
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+      <form class="flex flex-col gap-3 ">
+      
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="updateModal">Update issue</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body gap-4">
+       
+          
+          <div class="flex flex-row">
+              
+                  <select class="form-select w-40"  aria-label="Select an issue type" aria-placeholder="Select issue type" >
+                      <option selected disabled value="">Pick issue type</option>
+                  <option value="1">Account and Access</option>
+                  <option value="2">Bug</option>
+                  <option value="3">Incident report</option>
+                  <option value="3">Service request</option>
+                </select>
+            
+                <input type="text" class="form-control " aria-label="more info input" placeholder="What issue are you having ?" >
+            </div>
+            <textarea class="form-control mt-2"  placeholder="Add more detail about the issue here" rows="3" ></textarea>
+        
+         
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary"data-bs-dismiss="modal"  onclick="onUpdate()">Save changes</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
 {% endfor %} 
 </div>
 
+<script type="text/javascript">
+  const onUpdate = () => {
+    console.log("update")
+  }
 
+  const onResolve = () => {
+    console.log("resolve")
+  }
+</script>
 {% endblock %}
