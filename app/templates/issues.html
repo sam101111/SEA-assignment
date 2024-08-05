@@ -31,6 +31,7 @@
         </form>
     </div>
 <div id="issueContainer">
+  <h1 id="emptyText" class="text-xl text-center hidden">No issues found matching filters provided 😭</h1>
 {% for element in issues %}
 <div class="issue {{element.type}} {{ element.title}}">
 
@@ -105,6 +106,7 @@
   const onTypeFilter = () => {
     var filterValue = event.target.value;
     var container = document.querySelectorAll("#issueContainer .issue");
+    var allHidden = false;
     for (i = 0; i < container.length; i++)
     {
       console.log(container[i].classList)
@@ -113,11 +115,22 @@
         container[i].classList.remove("hidden")}
 
       else container[i].classList.add("hidden")
+
+      if (container[i].classList.contains("hidden")) allElementsHidden = true
+      else allElementsHidden = false
     }
+    console.log(container.length)
+    
+    if (allElementsHidden) document.getElementById("emptyText").classList.remove("hidden")
+    else document.getElementById("emptyText").classList.add("hidden")
+  
+    
   }
   const clearFilter = () => {
     var container = document.querySelectorAll("#issueContainer .issue");
     for (i = 0; i < container.length; i++) container[i].classList.remove("hidden")
+
+
   }
 </script>
 {% endblock %}
