@@ -2,7 +2,7 @@
 
 
 {% block content %}
-{% set issues = [{"id": 1,"title": "Create ticket", "type": "Service request", "info": "a bug was found"}, {"id": 2, "title": "Create ticket", "type": "Account and Access", "info": "a bug was found"}, {"id": 3, "title": "Create ticket", "type": "bug", "info": "a bug was found"}]%}
+{% set issues = [{"id": 1,"title": "Create ticket", "type": "service-request", "info": "a bug was found"}, {"id": 2, "title": "Create ticket", "type": "account-and-access", "info": "a bug was found"}, {"id": 3, "title": "Create ticket", "type": "bug", "info": "a bug was found"}]%}
 <div class="flex flex-col gap-3 w-10/12">
     <div>
         <h1 class="text-3xl">Your tickets</h1>
@@ -11,12 +11,12 @@
             
             <div>
             <label for="typeFilter" class="form-label">Issue type</label>  
-            <select class="form-select "  id="typeFilter" aria-label="Select a issue type" aria-placeholder="Select issue type" >
+            <select onchange="onTypeFilter()" class="form-select "  id="typeFilter" aria-label="Select a issue type" aria-placeholder="Select issue type" >
             <option selected disabled value="">Pick issue type</option>
-            <option value="1">Account and Access</option>
-            <option value="2">Bug</option>
-            <option value="3">Incident report</option>
-            <option value="3">Service request</option>
+            <option value="account-and-access">Account and Access</option>
+            <option value="bug">Bug</option>
+            <option value="incident-report">Incident report</option>
+            <option value="service-request">Service request</option>
           </select>
         </div>
         <div>
@@ -24,17 +24,19 @@
           <input type="email" class="form-control" id="searchFilter" placeholder="Title of issue">
         </div>
 
-        <button type="submit" class="btn btn-primary w-32 mt-8">Filter</button>
+        <button onclick="clearFilter()" class="btn btn-primary w-32 mt-8">Clear</button>
 
             
 
         </form>
     </div>
+<div id="issueContainer">
 {% for element in issues %}
+<div class="issue {{element.type}} {{ element.title}}">
 
-{% if element.type == "Account and Access" %}
+{% if element.type == "account-and-access" %}
     {% set tag = "btn btn-warning" %}
-{% elif element.type == "Service request"  %}
+{% elif element.type == "service-request"  %}
 {% set tag = "btn btn-info" %}
 {% else %}
 {% set tag = "btn btn-danger" %}
@@ -65,7 +67,7 @@
           
           <div class="flex flex-row">
               
-                  <select class="form-select w-40"  aria-label="Select an issue type" aria-placeholder="Select issue type" >
+                  <select  class="form-control w-40"   aria-label="Select an issue type" aria-placeholder="Select issue type" >
                       <option selected disabled value="">Pick issue type</option>
                   <option value="1">Account and Access</option>
                   <option value="2">Bug</option>
@@ -87,8 +89,9 @@
     </div>
   </div>
 </div>
-
+</div>
 {% endfor %} 
+</div>
 </div>
 
 <script type="text/javascript">
@@ -98,6 +101,23 @@
 
   const onResolve = () => {
     console.log("resolve")
+  }
+  const onTypeFilter = () => {
+    var filterValue = event.target.value;
+    var container = document.querySelectorAll("#issueContainer .issue");
+    for (i = 0; i < container.length; i++)
+    {
+      console.log(container[i].classList)
+      if(container[i].classList.contains(filterValue)) {
+        console.log("yas")
+        container[i].classList.remove("hidden")}
+
+      else container[i].classList.add("hidden")
+    }
+  }
+  const clearFilter = () => {
+    var container = document.querySelectorAll("#issueContainer .issue");
+    for (i = 0; i < container.length; i++) container[i].classList.remove("hidden")
   }
 </script>
 {% endblock %}
