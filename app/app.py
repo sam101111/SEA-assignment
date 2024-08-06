@@ -27,3 +27,8 @@ def home(req: Request):
 def home(req: Request):
     context = {'request': req}
     return templates.TemplateResponse("login.html", context)
+
+@app.get('/manage', response_class=HTMLResponse)
+def home(req: Request):
+    context = {'request': req}
+    return templates.TemplateResponse("manage.html", context)
