@@ -1,11 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h>login</h>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-col gap-4">
+<h1 class="text-3xl text-center">login</h1>
+<form class="gap-2">
+    <input onchange="onSearchFilter()" type="email" class="form-control" id="searchFilter" placeholder="Enter email">
+    <input onchange="onSearchFilter()" type="email" class="form-control mt-2" id="searchFilter" placeholder="Enter password">
+    <div class="flex flex-row gap-2">
+        <button onclick="login()" class="btn btn-primary w-32 mt-8" >Login</button>
+        <button onclick="signup()" class="btn btn-primary w-32 mt-8">Signup</button>
+    </div>
+</form>
+</div>
+
+<script>
+    const login = () => {
+        console.log("login")
+    }
+    const signup = () => {
+        console.log("signup")
+    }
+</script>
+{% endblock %}
