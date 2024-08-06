@@ -138,6 +138,7 @@
     {
       console.log(currentValue,container[i].classList[2] )
       if (!currentValue.includes(container[i].classList[2]) ) container[i].classList.add("hidden")
+      if (!currentValue.includes(container[i].classList[3]) ) container[i].classList.add("hidden")
       else container[i].classList.remove("hidden")
 
     }
@@ -147,7 +148,11 @@
   }
   const clearFilter = () => {
     var container = document.querySelectorAll("#issueContainer .issue");
-    for (i = 0; i < container.length; i++) container[i].classList.remove("hidden")
+    
+    for (i = 0; i < container.length; i++) container[i].classList.remove("hidden");
+    document.getElementById("typeFilter").value = ''
+    document.getElementById("searchFilter").value = ''
+
 
 
   }
