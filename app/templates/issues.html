@@ -7,7 +7,7 @@
     <div>
         <h1 class="text-3xl">Your tickets</h1>
         
-        <form class="flex flex-row w-6/12 gap-2">
+        <div class="flex flex-row w-6/12 gap-2">
             
             <div>
             <label for="typeFilter" class="form-label">Issue type</label>  
@@ -21,19 +21,20 @@
         </div>
         <div>
             <label for="searchFilter" class="form-label">Search for issue</label> 
-          <input type="email" class="form-control" id="searchFilter" placeholder="Title of issue">
+          <input onchange="onSearchFilter()" type="email" class="form-control" id="searchFilter" placeholder="Title or id of issue">
         </div>
 
         <button onclick="clearFilter()" class="btn btn-primary w-32 mt-8">Clear</button>
 
             
 
-        </form>
+      </div>
     </div>
 <div id="issueContainer">
   <h1 id="emptyText" class="text-xl text-center hidden">No issues found matching filters provided 😭</h1>
 {% for element in issues %}
-<div class="issue {{element.type}} {{ element.title}}">
+{% set titleFormatted = element.title.replace(" ", "-").lower()%}
+<div class="issue {{element.type}} {{ titleFormatted }} {{element.id}} mt-2">
 
 {% if element.type == "account-and-access" %}
     {% set tag = "btn btn-warning" %}
@@ -46,7 +47,7 @@
 <div class="card">
     <h5 class="card-header"> {{element.title}}</h5>
     <div class="card-body">
-      <h5 class="card-title"><span class="badge {{tag}}">{{element.type}}</span></h5>
+      <h5 class="card-title"><span class="badge {{tag}}">{{element.type.replace("-", " ")}}</span></h5>
       <p class="card-text">{{element.info}}</p>
       <button  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal">Update</button>
       <button onclick="onResolve()" class="btn btn-danger">Resolve</button>
@@ -128,6 +129,21 @@
     else document.getElementById("emptyText").classList.add("hidden")
   
     
+  }
+  const onSearchFilter = () => {
+    var container = document.querySelectorAll("#issueContainer .issue");
+    console.log(event.target.value)
+    var currentValue = event.target.value.replace(" ", "-").toLowerCase()
+    for (i = 0; i < container.length; i++)
+    {
+      console.log(currentValue,container[i].classList[2] )
+      if (!currentValue.includes(container[i].classList[2]) ) container[i].classList.add("hidden")
+      else container[i].classList.remove("hidden")
+
+    }
+
+
+
   }
   const clearFilter = () => {
     var container = document.querySelectorAll("#issueContainer .issue");
