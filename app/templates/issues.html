@@ -106,7 +106,7 @@
   const onTypeFilter = () => {
     var filterValue = event.target.value;
     var container = document.querySelectorAll("#issueContainer .issue");
-    var allHidden = false;
+    var allElementsHidden = false;
     for (i = 0; i < container.length; i++)
     {
       console.log(container[i].classList)
@@ -118,10 +118,13 @@
 
       if (container[i].classList.contains("hidden")) allElementsHidden = true
       else allElementsHidden = false
+      console.log(allElementsHidden)
     }
     console.log(container.length)
     
-    if (allElementsHidden) document.getElementById("emptyText").classList.remove("hidden")
+    if (allElementsHidden) {
+      console.log(allElementsHidden)
+      document.getElementById("emptyText").classList.remove("hidden")}
     else document.getElementById("emptyText").classList.add("hidden")
   
     
