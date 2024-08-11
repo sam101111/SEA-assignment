@@ -12,6 +12,7 @@ class IssueBase(BaseModel):
     title: str
     type: IssueType
     description: str
+    user_id: int
 
 class CreateIssue(IssueBase):
     pass

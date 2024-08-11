@@ -8,6 +8,10 @@ class User(BaseModel):
 class CreateUser(BaseModel):
     email: str
     password: str
+
+
+class DeleteUser(BaseModel):
+    id: int
     
 
 
