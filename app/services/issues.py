@@ -1,15 +1,27 @@
+from sqlalchemy.orm import Session
+from models.Issuedb import Issue as IssueDb
+from models.Userdb import User as UserDb
+from schemas.issue import IssueType
+def getAllIssues(db: Session ):
+    return db.query(IssueDb).all()
 
-def getAllIssues():
-    pass
+def getIssuesByUser(db: Session, id: int):
+    return db.query(UserDb.issues).filter(UserDb.id == id).scalar()
 
-def getIssuesByUser():
-    pass
+def createIssue(db: Session, title: str, description: str, type: IssueType, user_id: int ):
+    newIssue = IssueDb(title = title, description = description, type = type.value, user_id = user_id )
+    db.add(newIssue)
+    db.commit()
 
-def createIssue():
-    pass
+def getIssueByID(db: Session, id: int):
+    return db.query(IssueDb).filter(IssueDb.id == id).scalar()
 
-def updateIssue():
-    pass
+def updateIssue(db: Session, id: int, toUpdate):
+    db.query(IssueDb).filter(IssueDb.id == id).update(toUpdate)
+    db.commit()
+    
 
-def deleteIssue():
-    pass
+def deleteIssue(db: Session, id: int):
+    toDelete = db.query(IssueDb).filter(IssueDb.id == id).first()
+    db.delete(toDelete)
+    db.commit()
