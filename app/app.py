@@ -5,7 +5,7 @@ from database import engine, Base, getDB
 from models import Userdb, Issuedb
 from routers.issues import router as issues_router
 from routers.auth import router as auth_router
-from services.issues import getAllIssues
+from services.issues import getAllIssues, getIssuesByUser
 from sqlalchemy.orm import Session
 
 
@@ -24,8 +24,9 @@ def home(req: Request):
 
 
 @app.get('/issues', response_class=HTMLResponse)
-def home(req: Request):
-    context = {'request': req}
+def home(req: Request, db: Session = Depends(getDB)):
+    issues = getIssuesByUser(db, 2)
+    context = {'request': req, "issues": issues}
     return templates.TemplateResponse("issues.html", context)
 
 @app.get('/login', response_class=HTMLResponse)

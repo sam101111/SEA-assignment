@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 from models.Userdb import User as UserDb
 from schemas.user import *
 
-def createUser(db: Session, email: str, password: str, user_id: int):
-    user = UserDb(email = email, password = password, isAdmin = True, user_id = user_id)
+def createUser(db: Session, email: str, password: str):
+    user = UserDb(email = email, password = password, isAdmin = True)
     db.add(user)
     db.commit()
 

@@ -25,7 +25,6 @@ class ReadAllIssues(BaseModel):
     pass
 
 class UpdateIssue(BaseModel):
-    id: int
     type: Optional[IssueType]
     title: Optional[str]
     description: Optional[str]
