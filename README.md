@@ -4,7 +4,7 @@
 to run the application a few third party packages need to be installed, run the command bellow to run them:
 
 ```bash
-pip install fastapi jinja2 uvicorn
+pip install fastapi jinja2 uvicorn sqlalchemy
 ```
 
 ## Running the application

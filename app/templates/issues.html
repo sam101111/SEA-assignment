@@ -2,7 +2,9 @@
 
 
 {% block content %}
+{% block mockData %}
 {% set issues = [{"id": 1,"title": "Create ticket", "type": "service-request", "info": "a bug was found"}, {"id": 2, "title": "Create ticket", "type": "account-and-access", "info": "a bug was found"}, {"id": 3, "title": "Create ticket", "type": "bug", "info": "a bug was found"}]%}
+{% endblock %}
 <script type="text/javascript"></script>
 <div class="flex flex-col gap-3 w-10/12">
   
@@ -38,11 +40,13 @@
   <h1 id="emptyText" class="text-xl text-center hidden">No issues found matching filters provided 😭</h1>
 {% for element in issues %}
 {% set titleFormatted = element.title.replace(" ", "-").lower()%}
-<div class="issue {{element.type}} {{ titleFormatted }} {{element.id}} mt-2">
+{% set formattedType = element.type.value.replace(" ", "-").lower() %}
+<div class="issue {{formattedType}} {{ titleFormatted }} {{element.id}} mt-2">
 
-{% if element.type == "account-and-access" %}
+
+{% if formattedType == "account-and-access" %}
     {% set tag = "btn btn-warning" %}
-{% elif element.type == "service-request"  %}
+{% elif formattedType == "service-request"  %}
 {% set tag = "btn btn-info" %}
 {% else %}
 {% set tag = "btn btn-danger" %}
@@ -52,11 +56,13 @@
     <h5 class="card-header"> {{element.title}}</h5>
     <div class="card-body">
       <h5 class="card-title"><span class="badge {{tag}}">{{element.type.replace("-", " ")}}</span></h5>
-      <p class="card-text">{{element.info}}</p>
+      <p class="card-text mb-2">{{element.description}}</p>
       <button  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal">Update</button>
+     
       {% block adminButton%}
    
       {% endblock %}
+      <p class="float-right">Opened by: {{element.user.email}}</p>
     </div>
   
 </div>
