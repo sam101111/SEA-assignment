@@ -6,7 +6,7 @@ def getAllIssues(db: Session ):
     return db.query(IssueDb).all()
 
 def getIssuesByUser(db: Session, id: int):
-    return db.query(UserDb.issues).filter(UserDb.id == id).scalar()
+    return db.query(IssueDb).filter(IssueDb.user_id == id).all()
 
 def createIssue(db: Session, title: str, description: str, type: IssueType, user_id: int ):
     newIssue = IssueDb(title = title, description = description, type = type.value, user_id = user_id )
