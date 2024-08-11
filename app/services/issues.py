@@ -27,5 +27,5 @@ def deleteIssue(db: Session, id: int):
     db.delete(toDelete)
     db.commit()
 
-def checkIfExists(db: Session, id: int):
+def checkIfIssueExists(db: Session, id: int):
     return db.query(exists().where(IssueDb.id == id)).scalar()
