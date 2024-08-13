@@ -15,11 +15,11 @@ class IssueBase(BaseModel):
     
 
 class CreateIssue(IssueBase):
-    user_id: int
+    user_id: str
 
 
 class ReadIssues(BaseModel):
-    user_id: int
+    user_id: str
 
 class ReadAllIssues(BaseModel):
     pass
@@ -33,12 +33,7 @@ class UpdateIssue(BaseModel):
     description: Optional[str]
 
 class DeleteIssue(BaseModel):
-    id: int
+    id: str
 
 class IssueResponse():
     pass
-
-
-
-
-

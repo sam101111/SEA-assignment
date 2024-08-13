@@ -13,7 +13,7 @@ class LoginUser(UserBase):
     pass
 
 class DeleteUser(BaseModel):
-    id: int
+    id: str
     
 
 
