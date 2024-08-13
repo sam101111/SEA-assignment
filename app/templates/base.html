@@ -15,10 +15,9 @@
 </head>
 <body class="">
     <div class="nav flex  items-center bg-[#7079D9] text-white text-xl">
-        
-        <h1 class="text-3xl mx-10">Help Desk Centre 🆘</h1>
-   
-            {% set navElements = [{"title": "Create ticket", "url": "/"}, {"title": "Your issues", "url": "/issues"}, {"title": "Manage issues", "url": "/manage"}, {"title": "login", "url": "/login"}]%}
+        {% set navElements = [{"title": "Create ticket", "url": "/"}, {"title": "Your issues", "url": "/issues"}, {"title": "Manage issues", "url": "/manage"}, {"title": "login", "url": "/login"}]%}
+
+        <h1 class="text-3xl mx-10"><a href="{{navElements[0].url}}">Help Desk Centre 🆘</a></h1>
             {% for element in navElements %}
             <ul>
         <li class="p-4 m-2 cursor-pointer duration-300 hover:text-[#D3D3D3]" >

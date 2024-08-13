@@ -12,16 +12,19 @@ class IssueBase(BaseModel):
     title: str
     type: IssueType
     description: str
-    user_id: int
+    
 
 class CreateIssue(IssueBase):
-    pass
+    user_id: int
 
 
 class ReadIssues(BaseModel):
     user_id: int
 
 class ReadAllIssues(BaseModel):
+    pass
+
+class ReadIssue(IssueBase):
     pass
 
 class UpdateIssue(BaseModel):

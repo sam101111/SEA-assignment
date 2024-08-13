@@ -36,5 +36,4 @@ async def patchIssue(id: int, issue: UpdateIssue, db: Session = Depends(getDB)):
 async def delete(id: int, db: Session = Depends(getDB)):
     if not checkIfIssueExists(db, id):
         raise HTTPException(status_code=404, detail="ID of issue not found")
-
     deleteIssue(db, id)

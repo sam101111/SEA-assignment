@@ -28,4 +28,10 @@ async def register(user: CreateUser, db: Session = Depends(getDB)):
 
 @router.delete('/{id}')
 async def delete(id: int, db: Session = Depends(getDB)):
+    if not checkIfUserExists(db, id):
+        raise HTTPException(status_code=404, detail="ID of user not found")
     deleteUser(db, id)
+
+@router.post('/login')
+async def login(user: LoginUser, db: Session = Depends(getDB)):
+    pass
