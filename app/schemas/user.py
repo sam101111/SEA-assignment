@@ -1,9 +1,9 @@
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class UserBase(BaseModel):
-    email: str
+    email: str = Field(pattern=r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$")
     password: str
 
 class CreateUser(UserBase):

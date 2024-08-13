@@ -3,7 +3,7 @@ from database import Base
 import uuid
 from  datetime import datetime, timedelta
 
-class User(Base):
+class Session(Base):
     __tablename__ = "sessions"
 
     user_id = Column(String, nullable=False )
