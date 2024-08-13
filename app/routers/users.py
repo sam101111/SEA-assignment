@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse
-from services.user import *
+from services.users import *
 from schemas.user import *
 from database import getDB
 from sqlalchemy.exc import IntegrityError
 import re
+import hashlib
 
 router = APIRouter()
 
@@ -21,7 +22,10 @@ async def register(user: CreateUser, db: Session = Depends(getDB)):
     if re.match(emailFormat, user.email) == None:
         raise HTTPException(status_code=400, detail="Email entered is not valid format")
     try:
-        createUser(db,user.email, user.password)
+        hashedPassword = hashlib.new("SHA256")
+        hashedPassword.update(str(user.password).encode())
+ 
+        createUser(db,user.email, hashedPassword.hexdigest())
     except IntegrityError:
         raise HTTPException(status_code=422, detail="Email entered is already registered")
 

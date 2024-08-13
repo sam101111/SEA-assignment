@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from schemas.issue import *
 from services.issues import *
-from services.user import checkIfUserExists
+from services.users import checkIfUserExists
 from database import getDB
 
 

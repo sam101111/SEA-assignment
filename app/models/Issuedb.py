@@ -1,4 +1,4 @@
-from sqlalchemy import  Column, ForeignKey, Integer, String, Enum as dbEnum
+from sqlalchemy import  Column, ForeignKey, String, Enum as dbEnum
 from sqlalchemy.orm import relationship
 from schemas.issue import IssueType
 from database import Base

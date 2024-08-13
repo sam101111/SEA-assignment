@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from database import engine, Base, getDB
 from models import Userdb, Issuedb
 from routers.issues import router as issues_router
-from routers.auth import router as auth_router
+from routers.users import router as auth_router
 from services.issues import getAllIssues, getIssuesByUser
 from sqlalchemy.orm import Session
 
