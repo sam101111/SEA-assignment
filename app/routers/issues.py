@@ -14,7 +14,7 @@ async def postIssue(issue: CreateIssue, db: Session = Depends(getDB) ):
 
 
 @router.get('/{user_id}')
-async def getByUser(user_id: int, db: Session = Depends(getDB)):
+async def getByUser(user_id: str, db: Session = Depends(getDB)):
     if not checkIfUserExists(db, user_id):
         raise HTTPException(status_code=404, detail="ID of user not found")
     return getIssuesByUser(db, user_id)
@@ -25,7 +25,7 @@ async def getIssues(db: Session = Depends(getDB)):
 
 
 @router.patch('/{id}') 
-async def patchIssue(id: int, issue: UpdateIssue, db: Session = Depends(getDB)):
+async def patchIssue(id: str, issue: UpdateIssue, db: Session = Depends(getDB)):
     if not checkIfIssueExists(db, id):
         raise HTTPException(status_code=404, detail="ID of issue not found")
     formattedIssue = issue.dict()
@@ -33,7 +33,7 @@ async def patchIssue(id: int, issue: UpdateIssue, db: Session = Depends(getDB)):
     return updateIssue(db, id, formattedIssue)
 
 @router.delete('/{id}')
-async def delete(id: int, db: Session = Depends(getDB)):
+async def delete(id: str, db: Session = Depends(getDB)):
     if not checkIfIssueExists(db, id):
         raise HTTPException(status_code=404, detail="ID of issue not found")
     deleteIssue(db, id)
