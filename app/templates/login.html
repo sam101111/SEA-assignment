@@ -2,22 +2,11 @@
 {% block content %}
 <div class="flex flex-col gap-4">
 <h1 class="text-3xl text-center">login</h1>
-<form class="gap-2">
-    <input onchange="onSearchFilter()" type="email" class="form-control" id="searchFilter" placeholder="Enter email">
-    <input onchange="onSearchFilter()" type="email" class="form-control mt-2" id="searchFilter" placeholder="Enter password">
-    <div class="flex flex-row gap-2">
-        <button onclick="login()" class="btn btn-primary w-32 mt-8" >Login</button>
-        <button onclick="signup()" class="btn btn-primary w-32 mt-8">Signup</button>
-    </div>
+<form class="gap-2" method="post", action="/api/auth/login">
+    <input onchange="onSearchFilter()" type="email" name="email" class="form-control" id="searchFilter" placeholder="Enter email" required>
+    <input onchange="onSearchFilter()" type="password" name="password" class="form-control mt-2" id="searchFilter" placeholder="Enter password" required>
+    <button onclick="login()" class="btn btn-primary  mt-8 w-full"  >Login</button>
 </form>
 </div>
 
-<script>
-    const login = () => {
-        console.log("login")
-    }
-    const signup = () => {
-        console.log("signup")
-    }
-</script>
 {% endblock %}

@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Request, Depends, HTTPException, Response, Form
-from typing import Annotated
+from fastapi import APIRouter, Cookie, Request, Depends, HTTPException, Response, Form
+from typing import Annotated, Optional
 from fastapi.responses import HTMLResponse
 from services.users import *
 from services.sessions import *
@@ -45,22 +45,23 @@ async def delete(request: Request, id: str, db: Session = Depends(getDB)):
     else:
         raise HTTPException(status_code=403, detail="User does not have necessary permission")
 
-@router.get('/login')
-async def login(response: Response, user: LoginUser, db: Session = Depends(getDB)):
-    if not checkIfUserExistsByEmail(db, user.email):
+@router.post('/login')
+async def login(response: Response, email: Annotated[str, Form()], password: Annotated[str, Form()] ,db: Session = Depends(getDB)):
+    if not checkIfUserExistsByEmail(db, email):
         raise HTTPException(status_code=404, detail="Email does not exist in database")
-    try:
-        checkPassword(db, user.password, user.email)
-    except:
-        pass
-    response.set_cookie(key="sessionID", value=f"{createSession(db, getIdByEmail(db, user.email))}")
+
+    if checkPassword(db, password, email) == False:
+        raise HTTPException(status_code=401, detail="Incorrect email or password")
+        
+    response.set_cookie(key="sessionID", value=f"{createSession(db, getIdByEmail(db, email))}")
     return {"message": "Session has been successfully created"}
 
 
-@router.delete('/logout')
-async def logout(request: Request):
+@router.post('/logout')
+async def logout(response: Response, sessionID: Optional[str] = Cookie(None), db: Session = Depends(getDB)):
     try:
-        deleteSession(request.cookies.get("seasonID"))
+        deleteSession(db,sessionID)
+        response.delete_cookie("sessionID")
     except:
-       raise HTTPException(status_code=404, detail="Email does not exist in database")
+       raise HTTPException(status_code=404, detail="session does not exist")
     return {"message": "Session has been successfully deleted"}
