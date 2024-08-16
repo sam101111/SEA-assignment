@@ -41,3 +41,7 @@ def checkPassword(db: Session, password: str, email: str):
 def getIdByEmail(db: Session, email: str):
     user = db.query(UserDb).filter(UserDb.email == email).first()
     return user.id
+
+def getRoleById(db: Session, id: str):
+    user = db.query(UserDb).filter(UserDb.id == id).first()
+    return user.isAdmin

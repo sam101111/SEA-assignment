@@ -25,7 +25,7 @@ def home(req: Request):
 
 @app.get('/issues', response_class=HTMLResponse)
 def home(req: Request, db: Session = Depends(getDB)):
-    issues = getIssuesByUser(db, 2)
+    issues = getIssuesByUser(db, "7c8eb4c8-8ec2-4339-b43d-ebd811e38635")
     context = {'request': req, "issues": issues}
     return templates.TemplateResponse("issues.html", context)
 

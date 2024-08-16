@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, Response, Form
+from typing import Annotated
 from fastapi.responses import HTMLResponse
 from services.users import *
 from services.sessions import *
 from schemas.user import *
+from middleware.sessionMangement import roleCheck
 from database import getDB
 from sqlalchemy.exc import IntegrityError
 import re
@@ -33,22 +35,32 @@ async def register(user: CreateUser, db: Session = Depends(getDB)):
 
 
 @router.delete('/{id}')
-async def delete(id: str, db: Session = Depends(getDB)):
-    if not checkIfUserExists(db, id):
-        raise HTTPException(status_code=404, detail="ID of user not found")
-    deleteUser(db, id)
+async def delete(request: Request, id: str, db: Session = Depends(getDB)):
+    isAdmin = roleCheck(True, request.cookies.get("seasonID"), db)
+    if isAdmin:
+        if not checkIfUserExists(db, id):
+            raise HTTPException(status_code=404, detail="ID of user not found")
+        deleteUser(db, id)
+        return {"message": "User has been successfully deleted"}
+    else:
+        raise HTTPException(status_code=403, detail="User does not have necessary permission")
 
-@router.post('/login')
-async def login(user: LoginUser, db: Session = Depends(getDB)):
+@router.get('/login')
+async def login(response: Response, user: LoginUser, db: Session = Depends(getDB)):
     if not checkIfUserExistsByEmail(db, user.email):
         raise HTTPException(status_code=404, detail="Email does not exist in database")
     try:
         checkPassword(db, user.password, user.email)
     except:
         pass
-    createSession(db, getIdByEmail(db, user.email))
+    response.set_cookie(key="sessionID", value=f"{createSession(db, getIdByEmail(db, user.email))}")
+    return {"message": "Session has been successfully created"}
 
 
 @router.delete('/logout')
-async def logout():
-    pass
+async def logout(request: Request):
+    try:
+        deleteSession(request.cookies.get("seasonID"))
+    except:
+       raise HTTPException(status_code=404, detail="Email does not exist in database")
+    return {"message": "Session has been successfully deleted"}
