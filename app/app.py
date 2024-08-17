@@ -21,10 +21,12 @@ app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 templates = Jinja2Templates(directory="templates")
 
 @app.get('/', response_class=HTMLResponse)
-def home(req: Request):
+def home(req: Request, sessionID: Optional[str] = Cookie(None)):
     context = {'request': req}
-    return templates.TemplateResponse("index.html", context)
-
+    if sessionID:
+        return templates.TemplateResponse("index.html", context)
+    else:
+        return templates.TemplateResponse("unauthorised.html", context)
 
 @app.get('/issues', response_class=HTMLResponse )
 def home(req: Request, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
@@ -43,17 +45,20 @@ def home(req: Request):
 
 @app.get('/manage', response_class=HTMLResponse)
 async def home( req: Request, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None) ):
-    isAdmin = roleCheck(True, sessionID, db )
-    if isAdmin:
-        issues =getAllIssues(db)
-        context = {'request': req, "issues": issues}
+    context = {'request': req}
+    try:
+        isAdmin = roleCheck(True, sessionID, db )
 
-        return templates.TemplateResponse("manage.html", context )
-    else:
+        if isAdmin:
+            issues =getAllIssues(db)
+            context = {'request': req, "issues": issues}
+
+            return templates.TemplateResponse("manage.html", context )
+        else:
+            return templates.TemplateResponse("unauthorised.html", context)
+    except:
         return templates.TemplateResponse("unauthorised.html", context)
-
-
-
+        
 @app.get('/successfulLogin', response_class=HTMLResponse)
 async def home( req: Request, db: Session = Depends(getDB) ):
     issues =getAllIssues(db)
