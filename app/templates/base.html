@@ -32,7 +32,7 @@
 
             <ul>
                 <li class="p-4 m-2 cursor-pointer duration-300 hover:text-[#D3D3D3]" >
-                <form action="/api/auth/logout" method="post" target="preventRedirect" onsubmit="onLogout()">
+                <form action="/api/auth/logout" method="post" target="preventRedirect" id="logoutForm">
                 <button type="submit">{{element.title}}</button>
                 </form>    
                 </li>
@@ -57,10 +57,34 @@
 
     {% endblock %}
 </div>
+
+<div id="logoutToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <img src="..." class="rounded me-2" alt="...">
+      <strong class="me-auto">Bootstrap</strong>
+      <small>11 mins ago</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Hello, world! This is a toast message.
+    </div>
 <script>
-    const onLogout = (e) => {
-        e.preventDefault()
-    }
+    document.getElementById("logoutForm").addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target)
+        const logoutToast = document.getElementById("logoutToast")
+        const toastInstance = bootstrap.Toast.getOrCreateInstance(logoutToast)
+        fetch('/api/auth/logout', {
+            method: "POST"
+        })
+        .then(res => {
+            window.location.replace("/login");
+
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    })
 </script>
 
 
