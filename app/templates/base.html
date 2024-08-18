@@ -24,7 +24,7 @@
             {% set sessionStatus = "Login" %}
             {% set sessionStatusUrl = "/login" %}
         {% endif %}
-        {% set navElements = [{"title": "Create ticket", "url": "/"}, {"title": "Your issues", "url": "/issues"}, {"title": "Manage issues", "url": "/manage"}, {"title": sessionStatus, "url": sessionStatusUrl }]%}
+        {% set navElements = [{"title": "Create ticket", "url": "/"}, {"title": "Your issues", "url": "/issues"}, {"title": "Manage issues", "url": "/manage"}, {"title": "Register", "url": "/register"} ,{"title": sessionStatus, "url": sessionStatusUrl }]%}
 
         <h1 class="text-3xl mx-10"><a href="{{navElements[0].url}}">Help Desk Centre 🆘</a></h1>
             {% for element in navElements %}

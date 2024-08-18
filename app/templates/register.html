@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-col gap-4">
+    <div class="alert alert-primary hidden" role="alert" id="loginAlert">
+        text here lol
+      </div>
+<h1 class="text-3xl text-center">Register a new account</h1>
+
+  
+<form class="gap-2" method="post" action="/api/auth/login" target="preventRedirect" id="loginForm">
+    <input  type="email" name="email" class="form-control" id="searchFilter" placeholder="Enter email" required>
+    <input  type="password" name="password" class="form-control mt-2" id="searchFilter" placeholder="Enter password" required>
+    <button class="btn btn-primary  mt-8 w-full"  >Register</button>
+</form>
+<iframe name="preventRedirect" style="display: none;"></iframe>
+</div>
+
+<script>
+    document.getElementById("loginForm").addEventListener('submit', (event) => {
+        event.preventDefault();
+        const alert = document.getElementById("loginAlert")
+        const fromData = new FormData(event.target);
+        fetch('/api/auth/register', {
+            method: 'POST',
+            body: fromData,
+        })
+        .then(res => {
+            console.log(res)
+ 
+            switch(res.status) {
+                case 200:
+                    alert.setAttribute("class", "alert alert-success")
+                    alert.textContent="Successfully created account"
+                    break;
+                case 422:
+                    alert.setAttribute("class", "alert alert-danger")
+                    alert.textContent="Email entered is already registered"
+                    break;
+                case 400:
+                    alert.setAttribute("class", "alert alert-danger")
+                    alert.textContent="Email or password entered is not valid format"
+                    break;
+            }
+            
+        })
+        .catch(err => {
+            console.log(err)
+
+        }) 
+    })
+
+</script>
+
+{% endblock %}

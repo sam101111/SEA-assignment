@@ -41,6 +41,7 @@
     </div>
 <div id="issueContainer">
   <h1 id="emptyText" class="text-xl text-center hidden">No issues found matching filters provided 😭</h1>
+{% block issueBlock %}
 {% for element in issues %}
 {% set titleFormatted = element.title.replace("-", "").lower()%}
 {% set formattedType = element.type.value.replace(" ", "-").lower() %}
@@ -55,23 +56,11 @@
 {% set tag = "btn btn-danger" %}
 {% endif %}
 
-<div class="card">
-    <h5 class="card-header"> {{element.title}}</h5>
-    <div class="card-body">
-      <h5 class="card-title"><span class="badge {{tag}}">{{element.type.replace("-", " ")}}</span></h5>
-      <p class="card-text mb-2">{{element.description}}</p>
-      <button  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal" name="{{element.id}}" onclick="onModalOpen(name)">Update</button>
-     
-      {% block adminButton%}
-   
-      {% endblock %}
-      <p class="float-right">Opened by: {{element.user.email}}</p>
-    </div>
-  
-</div>
 
-</div>
+{% include "components/card.html" %}
+
 {% endfor %} 
+{% endblock %}
 </div>
 </div>
 
@@ -142,9 +131,7 @@
         case 404:
           alert.setAttribute("class", "alert alert-danger")
           alert.textContent="Issue already deleted by another admin 😅"
-          break;
-
-        
+          break; 
       }
 
 
@@ -157,8 +144,34 @@
 
 
 
-  const onResolve = () => {
-    console.log("resolve")
+  const onResolve = (id) => {
+    const alert = document.getElementById("updateIssueAlert");
+    fetch(`/api/issues/${id}`, {
+      method: "DELETE"
+    })
+    .then(res => {
+      console.log(res)
+      switch (res.status) {
+        case 200:
+          alert.setAttribute("class", "alert alert-success")
+          alert.textContent="Successfully deleted issue, refresh to see changes 😊"
+          break;
+        case 404:
+          alert.setAttribute("class", "alert alert-danger")
+          alert.textContent="Issue already deleted by another admin 😅"
+          break; 
+        case 403:
+          alert.setAttribute("class", "alert alert-danger")
+          alert.textContent="User does not have necessary permission"
+          break; 
+
+      }
+
+
+    }).catch(err => {
+      console.log(err)
+        
+    })
   }
   const onTypeFilter = () => {
     var filterValue = event.target.value;
