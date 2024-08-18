@@ -30,7 +30,7 @@
         </div>
         <div>
             <label for="searchFilter" class="form-label">Search for issue</label> 
-          <input onchange="onSearchFilter()" type="email" class="form-control" id="searchFilter" placeholder="Title or id of issue">
+          <input onchange="onSearchFilter()" type="email" class="form-control" id="searchFilter" placeholder="Title of issue">
         </div>
 
         <button onclick="clearFilter()" class="btn btn-primary w-32 mt-8">Clear</button>
@@ -42,9 +42,9 @@
 <div id="issueContainer">
   <h1 id="emptyText" class="text-xl text-center hidden">No issues found matching filters provided 😭</h1>
 {% for element in issues %}
-{% set titleFormatted = element.title.replace(" ", "-").lower()%}
+{% set titleFormatted = element.title.replace("-", "").lower()%}
 {% set formattedType = element.type.value.replace(" ", "-").lower() %}
-<div class="issue {{formattedType}} {{ titleFormatted }} {{element.id}} mt-2">
+<div name="{{titleFormatted}}" class="issue {{formattedType}} {{ titleFormatted }} {{element.id}} mt-2">
 
 
 {% if formattedType == "account-and-access" %}
@@ -168,7 +168,6 @@
     {
       console.log(container[i].classList)
       if(container[i].classList.contains(filterValue)) {
-        console.log("yas")
         container[i].classList.remove("hidden")}
 
       else container[i].classList.add("hidden")
@@ -190,14 +189,12 @@
   const onSearchFilter = () => {
     var container = document.querySelectorAll("#issueContainer .issue");
     console.log(event.target.value)
-    var currentValue = event.target.value.replace(" ", "-").toLowerCase()
+    var currentValue = event.target.value.replace("-", " ").toLowerCase()
     for (i = 0; i < container.length; i++)
     {
       console.log(currentValue,container[i].classList[2] )
-      if (!currentValue.includes(container[i].classList[2]) ) container[i].classList.add("hidden")
-      if (!currentValue.includes(container[i].classList[3]) ) container[i].classList.add("hidden")
+      if (currentValue != container[i].getAttribute("name")) container[i].classList.add("hidden")
       else container[i].classList.remove("hidden")
-
     }
 
 
@@ -209,9 +206,6 @@
     for (i = 0; i < container.length; i++) container[i].classList.remove("hidden");
     document.getElementById("typeFilter").value = ''
     document.getElementById("searchFilter").value = ''
-
-
-
   }
 </script>
 {% endblock %}
