@@ -48,16 +48,21 @@ async def delete(request: Request, id: str, db: Session = Depends(getDB)):
 @router.post('/login')
 async def login(response: Response, email: Annotated[str, Form()], password: Annotated[str, Form()] ,db: Session = Depends(getDB)):
     emailFormat = r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$"
-    if re.match(emailFormat, email) == None:
-        raise HTTPException(status_code=400, detail="Email entered is not valid format")
-    if not checkIfUserExistsByEmail(db, email):
-        raise HTTPException(status_code=404, detail="Email does not exist in database")
-
-    if checkPassword(db, password, email) == False:
-        raise HTTPException(status_code=401, detail="Incorrect email or password")
+    try:
+        if re.match(emailFormat, email) == None:
+            raise HTTPException(status_code=400, detail="Email entered is not valid format")
+        if not checkIfUserExistsByEmail(db, email):
+            raise HTTPException(status_code=404, detail="Email does not exist in system")
         
-    response.set_cookie(key="sessionID", value=f"{createSession(db, getIdByEmail(db, email))}")
-    return {"message": "Session has been successfully created"}
+        if checkPassword(db, password, email) == False:
+            raise HTTPException(status_code=401, detail="Incorrect email or password")
+            
+        response.set_cookie(key="sessionID", value=f"{createSession(db, getIdByEmail(db, email))}")
+
+        return {"message": "Session has been successfully created"}
+    except:
+        raise HTTPException(status_code=404, detail="Email does not exist in system")
+
 
 
 
