@@ -29,3 +29,7 @@ def deleteIssue(db: Session, id: str):
 
 def checkIfIssueExists(db: Session, id: str):
     return db.query(exists().where(IssueDb.id == id)).scalar()
+
+def getUserByIssueID(db: Session, issueId: str): 
+    issue = db.query(IssueDb).filter(IssueDb.id == issueId).first()
+    return issue.user_id
