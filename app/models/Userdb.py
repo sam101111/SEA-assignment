@@ -1,13 +1,14 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Enum as dbEnum
+from sqlalchemy import Boolean, Column, String
 from sqlalchemy.orm import relationship
 from database import Base
+import uuid
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
-    email = Column(String, unique=True, index=True)
-    password = Column(String)
-    isAdmin = Column(Boolean, default=True)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    email = Column(String, unique=True, index=True, nullable=False)
+    password = Column(String, nullable=False)
+    isAdmin = Column(Boolean, default=False, nullable=False)
 
     issues = relationship("Issue", back_populates="user")

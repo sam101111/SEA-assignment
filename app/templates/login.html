@@ -1,23 +1,58 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="flex flex-col gap-4">
+    <div class="alert alert-primary hidden" role="alert" id="loginAlert">
+        text here lol
+      </div>
 <h1 class="text-3xl text-center">login</h1>
-<form class="gap-2">
-    <input onchange="onSearchFilter()" type="email" class="form-control" id="searchFilter" placeholder="Enter email">
-    <input onchange="onSearchFilter()" type="email" class="form-control mt-2" id="searchFilter" placeholder="Enter password">
-    <div class="flex flex-row gap-2">
-        <button onclick="login()" class="btn btn-primary w-32 mt-8" >Login</button>
-        <button onclick="signup()" class="btn btn-primary w-32 mt-8">Signup</button>
-    </div>
+
+  
+<form class="gap-2" method="post" action="/api/auth/login" target="preventRedirect" id="loginForm">
+    <input  type="email" name="email" class="form-control" id="searchFilter" placeholder="Enter email" required>
+    <input  type="password" name="password" class="form-control mt-2" id="searchFilter" placeholder="Enter password" required>
+    <button class="btn btn-primary  mt-8 w-full"  >Login</button>
 </form>
+<iframe name="preventRedirect" style="display: none;"></iframe>
 </div>
 
 <script>
-    const login = () => {
-        console.log("login")
-    }
-    const signup = () => {
-        console.log("signup")
-    }
+    document.getElementById("loginForm").addEventListener('submit', (event) => {
+        event.preventDefault();
+        const alert = document.getElementById("loginAlert")
+        const fromData = new FormData(event.target);
+        fetch('/api/auth/login', {
+            method: 'POST',
+            body: fromData,
+        })
+        .then(res => {
+            console.log(res)
+            if (res.status == 200){
+                console.log("successfully logged in")
+                alert.setAttribute("class", "alert alert-success")
+                alert.textContent="Successfully logged in"
+            } else {
+                switch(res.status) {
+                    case 400:
+                        alert.setAttribute("class", "alert alert-danger")
+                        alert.textContent="Email entered is not valid format"
+                        break;
+                    case 404:
+                        alert.setAttribute("class", "alert alert-danger")
+                        alert.textContent="User does not exist in database"
+                        break;
+                    case 401:
+                        alert.setAttribute("class", "alert alert-danger")
+                        alert.textContent="Incorrect email or password"
+                        break;
+                }
+            }
+        })
+        .catch(err => {
+            console.log(err)
+
+        }) 
+    })
+
 </script>
+
 {% endblock %}
