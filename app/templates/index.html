@@ -2,9 +2,12 @@
 
 
 {% block content %}
-<iframe id="preventRedirect"></iframe>
 
-<form class="flex flex-col gap-3 w-5/12" target="preventRedirect" method="post" action="/api/issues/" id="createIssue">
+
+<form class="flex flex-col gap-3 w-5/12" target="preventRedirect"  id="createIssue">
+  <div class="alert alert-primary hidden" role="alert" id="createIssueAlert">
+    text here lol
+  </div>
     <h1 class="text-3xl text-center">Have an issue ? submit a ticket here</h1>
  
     
@@ -25,11 +28,36 @@
   
     </form>
 
-    <!-- <script>
-      const issueForm = document.querySelector('#createIssue');
-      issueForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-      })
+    <<script>
+      document.getElementById("createIssue").addEventListener('submit', (event) => {
+        event.preventDefault();
+        const alert = document.getElementById("createIssueAlert")
+        const formData = new FormData(event.target);
+        fetch('/api/issues', {
+          method: 'POST',
+          body: formData,
+        })
+        .then(res => {
+          console.log(res)
+          if (res.status == 200) {
+            alert.setAttribute("class", "alert alert-success")
+            alert.textContent="Successfully created issue"
 
-    </script> -->
+          } else {
+            switch (res.status) {
+              case 401:
+                alert.setAttribute("class", "alert alert-danger")
+                alert.textContent="Please login to create an issue"
+                break;
+              case 422:
+                alert.setAttribute("class", "alert alert-danger")
+                alert.textContent="Please enter all required felids"
+                break;
+            }
+          }
+        })
+
+      })
+ 
+    </script>
 {% endblock %}

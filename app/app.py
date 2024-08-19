@@ -65,3 +65,8 @@ async def home( req: Request, db: Session = Depends(getDB) ):
     context = {'request': req, "issues": issues}
 
     return templates.TemplateResponse("successfulLogin.html", context )
+
+@app.get('/register',  response_class=HTMLResponse)
+async def register(req: Request):
+    context = {'request': req}
+    return templates.TemplateResponse("register.html", context)

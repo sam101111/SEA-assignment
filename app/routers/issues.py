@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 from middleware.sessionMangement import roleCheck
 from schemas.issue import *
 from services.issues import *
-from services.users import checkIfUserExists, getIdByEmail
+from services.users import checkIfUserExists, getIdByEmail, getRoleById
 from services.sessions import getUserBySession
 from database import getDB
 
@@ -34,12 +34,33 @@ async def getIssues(db: Session = Depends(getDB)):
 
 
 @router.patch('/{id}') 
-async def patchIssue(id: str, issue: UpdateIssue, db: Session = Depends(getDB)):
-    if not checkIfIssueExists(db, id):
-        raise HTTPException(status_code=404, detail="ID of issue not found")
-    formattedIssue = issue.dict()
-    formattedIssue['type'] = issue.type.value
-    return updateIssue(db, id, formattedIssue)
+async def patchIssue(id: str, title: Annotated[Optional[str], Form()] = None, type: Annotated[Optional[IssueType], Form()] = None, description: Annotated[Optional[str], Form()] = None, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
+        try:
+            userId = getUserBySession(db, sessionID)
+            userRole = getRoleById(db, userId)
+            userIssueId = getUserByIssueID(db, id)
+            if not checkIfIssueExists(db, id):
+                raise HTTPException(status_code=404, detail="ID of issue not found")
+        except:
+            raise HTTPException(status_code=403, detail="User does not have necessary permission")
+
+        if userIssueId == userId or userRole == True:
+            issue = {
+                "title": title,
+                "type": type.value,
+                "description": description
+            }
+            # loops through each pair and filters out any pairs where the value is None
+            filteredIssue = {key: value for key, value in issue.items() if value is not None}
+            print(filteredIssue)
+            print(sessionID)
+            
+            updateIssue(db, id, filteredIssue)
+            raise HTTPException(status_code=200, detail="Issue has been updated")
+        else:
+            raise HTTPException(status_code=403, detail="User does not have necessary permission")
+
+
 
 @router.delete('/{id}')
 async def delete(id: str, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
