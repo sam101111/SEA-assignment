@@ -54,7 +54,7 @@ async def login(response: Response, email: Annotated[str, Form()], password: Ann
         raise HTTPException(status_code=400, detail="Email entered is not valid format")
     if not checkIfUserExistsByEmail(db, email):
         raise HTTPException(status_code=404, detail="Email does not exist in system")
-        
+         
     if checkPassword(db, password, email) == False:
         raise HTTPException(status_code=401, detail="Incorrect email or password")
             

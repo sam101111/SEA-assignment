@@ -29,7 +29,7 @@ def checkIfUserExists(db: Session, id: str):
     return db.query(exists().where(UserDb.id == id)).scalar()
 
 def checkIfUserExistsByEmail(db: Session, email: str ):
-    return db.query(exists().where(UserDb.email == email)).first()
+    return db.query(exists().where(UserDb.email == email)).scalar()
 
 def checkPassword(db: Session, password: str, email: str):
     user = db.query(UserDb).filter(UserDb.email == email).first()
