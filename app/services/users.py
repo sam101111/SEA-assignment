@@ -5,7 +5,7 @@ from sqlalchemy.sql import exists
 import hashlib
 
 def createUser(db: Session, email: str, password: str):
-    user = UserDb(email = email, password = password, isAdmin = True)
+    user = UserDb(email = email, password = password, isAdmin = False)
     db.add(user)
     db.commit()
 
