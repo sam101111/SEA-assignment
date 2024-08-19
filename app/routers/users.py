@@ -21,16 +21,17 @@ async def getAllUsers(db: Session = Depends(getDB)):
 @router.post('/register')
 async def register(email: Annotated[str, Form()], password: Annotated[str, Form()] ,db: Session = Depends(getDB)):
     emailFormat = r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$"
-    passwordFormat = r""
+    passwordFormat = r"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$"
 
-    if re.match(emailFormat, email) == None:
+    if re.match(emailFormat, email) == None or re.match(passwordFormat, password) == None:
         raise HTTPException(status_code=400, detail="Email entered is not valid format")
     try:
         hashedPassword = hashlib.new("SHA256")
         hashedPassword.update(str(password).encode())
  
         createUser(db,email, hashedPassword.hexdigest())
-    except IntegrityError:
+    except IntegrityError as e:
+        print(e)
         raise HTTPException(status_code=422, detail="Email entered is already registered")
 
 
@@ -48,20 +49,19 @@ async def delete(request: Request, id: str, db: Session = Depends(getDB)):
 @router.post('/login')
 async def login(response: Response, email: Annotated[str, Form()], password: Annotated[str, Form()] ,db: Session = Depends(getDB)):
     emailFormat = r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$"
-    try:
-        if re.match(emailFormat, email) == None:
-            raise HTTPException(status_code=400, detail="Email entered is not valid format")
-        if not checkIfUserExistsByEmail(db, email):
-            raise HTTPException(status_code=404, detail="Email does not exist in system")
-        
-        if checkPassword(db, password, email) == False:
-            raise HTTPException(status_code=401, detail="Incorrect email or password")
-            
-        response.set_cookie(key="sessionID", value=f"{createSession(db, getIdByEmail(db, email))}")
 
-        return {"message": "Session has been successfully created"}
-    except:
+    if re.match(emailFormat, email) == None:
+        raise HTTPException(status_code=400, detail="Email entered is not valid format")
+    if not checkIfUserExistsByEmail(db, email):
         raise HTTPException(status_code=404, detail="Email does not exist in system")
+        
+    if checkPassword(db, password, email) == False:
+        raise HTTPException(status_code=401, detail="Incorrect email or password")
+            
+    response.set_cookie(key="sessionID", value=f"{createSession(db, getIdByEmail(db, email))}")
+
+    return {"message": "Session has been successfully created"}
+
 
 
 

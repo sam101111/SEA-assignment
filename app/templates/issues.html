@@ -174,6 +174,7 @@
     })
   }
   const onTypeFilter = () => {
+    document.getElementById("emptyText").classList.add("hidden")
     var filterValue = event.target.value;
     var container = document.querySelectorAll("#issueContainer .issue");
     var allElementsHidden = 0;
@@ -200,6 +201,7 @@
     
   }
   const onSearchFilter = () => {
+    document.getElementById("emptyText").classList.add("hidden")
     var container = document.querySelectorAll("#issueContainer .issue");
     console.log(event.target.value)
     var currentValue = event.target.value.replace("-", " ").toLowerCase()

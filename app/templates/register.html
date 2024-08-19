@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="flex flex-col gap-4">
-    <div class="alert alert-primary hidden" role="alert" id="loginAlert">
+    <div class="alert alert-primary hidden max-w-10 text-wrap" role="alert" id="loginAlert">
         text here lol
       </div>
 <h1 class="text-3xl text-center">Register a new account</h1>
@@ -37,8 +37,8 @@
                     alert.textContent="Email entered is already registered"
                     break;
                 case 400:
-                    alert.setAttribute("class", "alert alert-danger")
-                    alert.textContent="Email or password entered is not valid format"
+                    alert.setAttribute("class", "alert alert-danger text-pretty max-w-96")
+                    alert.textContent="Email or password entered is not valid format. passwords most contain at least: a digit from 1 to 9, one lower case letter, one upper case letter, one special character and password length must be between 8 to 16"
                     break;
             }
             
