@@ -3,15 +3,15 @@
 
 {% block content %}
 {% block mockData %}
-{% set issues = [{"id": 1,"title": "Create ticket", "type": "service-request", "info": "a bug was found"}, {"id": 2, "title": "Create ticket", "type": "account-and-access", "info": "a bug was found"}, {"id": 3, "title": "Create ticket", "type": "bug", "info": "a bug was found"}]%}
 {% endblock %}
 <script type="text/javascript"></script>
 <div class="flex flex-col gap-3 w-10/12">
-  
+  <div class="alert alert-primary hidden" role="alert" id="updateIssueAlert">
+    text here lol
+  </div>
+  {% block filters %}
     <div>
-      <div class="alert alert-primary hidden" role="alert" id="updateIssueAlert">
-        text here lol
-      </div>
+
       {% block title %}
         <h1 class="text-3xl">Your tickets</h1>
       {% endblock %}
@@ -39,6 +39,7 @@
 
       </div>
     </div>
+    {% endblock %}
 <div id="issueContainer">
   <h1 id="emptyText" class="text-xl text-center hidden">No issues found matching filters provided 😭</h1>
 {% block issueBlock %}
@@ -91,7 +92,6 @@
             </div>
             <textarea name="description" class="form-control mt-2"  placeholder="Add more detail about the issue here" rows="3" ></textarea>
         
-         
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -103,6 +103,62 @@
 </div>
 
 <script>
+  const deleteUser = (id) => {
+    const alert = document.getElementById("updateIssueAlert");
+    fetch(`/api/auth/${id}`, {
+      method: "DELETE"
+    })
+    .then(res => {
+      switch (res.status) {
+        case 200:
+          alert.setAttribute("class", "alert alert-success")
+          alert.textContent="Successfully deleted user, refresh to see changes 😊"
+          break;
+        case 404:
+          alert.setAttribute("class", "alert alert-danger")
+          alert.textContent="User already deleted by another admin 😅"
+          break;
+        case 403:
+          alert.setAttribute("class", "alert alert-danger")
+          alert.textContent="User does not have necessary permission 🚫"
+          break;
+
+      }
+    
+    }) .catch(err => {
+      console.log(err)
+    })
+  }
+
+  const promote = (id) => {
+    const alert = document.getElementById("updateIssueAlert");
+    fetch(`/api/auth/promote/${id}`, {
+      method: "PATCH"
+    })
+    .then(res => {
+      switch (res.status) {
+        case 200:
+          alert.setAttribute("class", "alert alert-success")
+          alert.textContent="Successfully promoted user, refresh to see changes 😊"
+          break;
+        case 404:
+          alert.setAttribute("class", "alert alert-danger")
+          alert.textContent="User has been deleted by another admin 😅"
+          break;
+        case 403:
+          alert.setAttribute("class", "alert alert-danger")
+          alert.textContent="User does not have necessary permission 🚫"
+          break;
+        case 400:
+          alert.setAttribute("class", "alert alert-danger")
+          alert.textContent="User is already an admin 😅"
+          break;
+      }
+    
+    }) .catch(err => {
+      console.log(err)
+    })
+}
   const onModalOpen = (id) => {
     const updateForm = document.getElementById("updateForm")
     updateForm.setAttribute("issue-id", `${id}`)
@@ -136,7 +192,6 @@
 
 
     }).catch(err => {
-      console.log(formData)
       console.log(err)
         
     })

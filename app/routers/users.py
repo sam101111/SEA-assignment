@@ -15,8 +15,13 @@ router = APIRouter()
 
 
 @router.get('/')
-async def getAllUsers(db: Session = Depends(getDB)):
-    return  getUsers(db)
+async def getAllUsers(db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
+    try:
+        if sessionID:
+            return  getUsers(db)
+    except Exception as err:
+        raise HTTPException(status_code=403, detail="User does not have necessary permission")
+
 
 @router.post('/register')
 async def register(email: Annotated[str, Form()], password: Annotated[str, Form()] ,db: Session = Depends(getDB)):
@@ -30,20 +35,44 @@ async def register(email: Annotated[str, Form()], password: Annotated[str, Form(
         hashedPassword.update(str(password).encode())
  
         createUser(db,email, hashedPassword.hexdigest())
-    except IntegrityError as e:
-        print(e)
+    except IntegrityError as err:
+        print(err)
         raise HTTPException(status_code=422, detail="Email entered is already registered")
+    
+@router.patch('/promote/{id}')
+async def promote(request: Request, id: str, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
+    try:
+        isAdmin = roleCheck(True, sessionID, db)
+        if isAdmin:
+            if not checkIfUserExists(db, id):
+                raise HTTPException(status_code=404, detail="ID of user not found")
+            if getRoleById(db, id) == True:
+                raise HTTPException(status_code=403, detail="User does not have necessary permission")
+
+
+            promoteUser(db, id)
+            return {"message": "User has been successfully promoted"}
+        else: 
+            raise HTTPException(status_code=400, detail="User already an admin")
+    except Exception as err:
+        print(err)
+        raise HTTPException(status_code=403, detail="User does not have necessary permission")
+
 
 
 @router.delete('/{id}')
-async def delete(request: Request, id: str, db: Session = Depends(getDB)):
-    isAdmin = roleCheck(True, request.cookies.get("seasonID"), db)
-    if isAdmin:
-        if not checkIfUserExists(db, id):
-            raise HTTPException(status_code=404, detail="ID of user not found")
-        deleteUser(db, id)
-        return {"message": "User has been successfully deleted"}
-    else:
+async def delete(request: Request, id: str, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
+    try:
+        isAdmin = roleCheck(True, sessionID, db)
+        if isAdmin:
+            if not checkIfUserExists(db, id):
+                raise HTTPException(status_code=404, detail="ID of user not found")
+            deleteUser(db, id)
+            return {"message": "User has been successfully deleted"}
+        else:
+            raise HTTPException(status_code=403, detail="User does not have necessary permission")
+    except Exception as err:
+        print(err)
         raise HTTPException(status_code=403, detail="User does not have necessary permission")
 
 @router.post('/login')

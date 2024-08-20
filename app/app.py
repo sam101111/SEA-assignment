@@ -2,6 +2,7 @@ from typing import Optional
 from fastapi import FastAPI, Request, Depends, Cookie
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from services.users import getRoleById, getUsers
 from database import engine, Base, getDB
 from models import Userdb, Issuedb
 from routers.issues import router as issues_router
@@ -31,12 +32,31 @@ def home(req: Request, sessionID: Optional[str] = Cookie(None)):
 @app.get('/issues', response_class=HTMLResponse )
 def home(req: Request, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
     try:
-        issues = getIssuesByUser(db, getUserBySession(db, sessionID))
-        context = {'request': req, "issues": issues}
-        return templates.TemplateResponse("issues.html", context)
+        if sessionID:
+            issues = getIssuesByUser(db, getUserBySession(db, sessionID))
+            context = {'request': req, "issues": issues}
+            return templates.TemplateResponse("issues.html", context)
+        else:
+            return templates.TemplateResponse("unauthorised.html", context)
     except:
         context = {'request': req}
         return templates.TemplateResponse("unauthorised.html", context)
+
+@app.get('/directory', response_class=HTMLResponse )
+def home(req: Request, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
+        try:
+            if sessionID:
+                users = getUsers(db)
+                userRole = getRoleById(db, getUserBySession(db, sessionID))
+                context = {'request': req, "users": users, "role": userRole}
+                return templates.TemplateResponse("userDirectory.html", context)
+            else:
+                return templates.TemplateResponse("unauthorised.html", context)
+
+        except:
+            context = {'request': req}
+            return templates.TemplateResponse("unauthorised.html", context)
+
 
 @app.get('/login', response_class=HTMLResponse)
 def home(req: Request):
