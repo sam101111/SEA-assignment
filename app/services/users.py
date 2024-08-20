@@ -22,6 +22,10 @@ def updateUser(db: Session, id: str, toUpdate):
 def getUsers(db: Session):
     return db.query(UserDb).all()
 
+def promoteUser(db: Session, id: str):
+    db.query(UserDb).filter(UserDb.id == id).update({"isAdmin": True})
+    db.commit()
+
 def getUser(db: Session, id: str):
     return db.query(UserDb).filter(UserDb.id == id).scalar()
 

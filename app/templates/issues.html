@@ -6,11 +6,12 @@
 {% endblock %}
 <script type="text/javascript"></script>
 <div class="flex flex-col gap-3 w-10/12">
+  <div class="alert alert-primary hidden" role="alert" id="updateIssueAlert">
+    text here lol
+  </div>
   {% block filters %}
     <div>
-      <div class="alert alert-primary hidden" role="alert" id="updateIssueAlert">
-        text here lol
-      </div>
+
       {% block title %}
         <h1 class="text-3xl">Your tickets</h1>
       {% endblock %}
@@ -104,7 +105,7 @@
 <script>
   const deleteUser = (id) => {
     const alert = document.getElementById("updateIssueAlert");
-    fetch(`/api/users/${id}`, {
+    fetch(`/api/auth/${id}`, {
       method: "DELETE"
     })
     .then(res => {
@@ -119,7 +120,7 @@
           break;
         case 403:
           alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User does not have necessary permission"
+          alert.textContent="User does not have necessary permission 🚫"
           break;
 
       }
@@ -129,8 +130,34 @@
     })
   }
 
-  const promote = () => {
-    console.log("promoted lol")
+  const promote = (id) => {
+    const alert = document.getElementById("updateIssueAlert");
+    fetch(`/api/auth/promote/${id}`, {
+      method: "PATCH"
+    })
+    .then(res => {
+      switch (res.status) {
+        case 200:
+          alert.setAttribute("class", "alert alert-success")
+          alert.textContent="Successfully promoted user, refresh to see changes 😊"
+          break;
+        case 404:
+          alert.setAttribute("class", "alert alert-danger")
+          alert.textContent="User has been deleted by another admin 😅"
+          break;
+        case 403:
+          alert.setAttribute("class", "alert alert-danger")
+          alert.textContent="User does not have necessary permission 🚫"
+          break;
+        case 400:
+          alert.setAttribute("class", "alert alert-danger")
+          alert.textContent="User is already an admin 😅"
+          break;
+      }
+    
+    }) .catch(err => {
+      console.log(err)
+    })
 }
   const onModalOpen = (id) => {
     const updateForm = document.getElementById("updateForm")

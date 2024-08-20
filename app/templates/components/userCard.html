@@ -11,7 +11,7 @@
   </h5>
       <p class="card-text mb-2">{{element.description}}</p>
       
-      {% if role == False %}
+      {% if role == True %}
       <button  class="btn btn-danger"  name="{{element.id}}" onclick="deleteUser(name)">Delete</button>
       {% if element.isAdmin == False%}
       <button  class="btn btn-primary"  name="{{element.id}}" onclick="promote(name)">Promote to Admin</button>
