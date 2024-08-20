@@ -37,13 +37,16 @@ async def register(email: Annotated[str, Form()], password: Annotated[str, Form(
 
 @router.delete('/{id}')
 async def delete(request: Request, id: str, db: Session = Depends(getDB)):
-    isAdmin = roleCheck(True, request.cookies.get("seasonID"), db)
-    if isAdmin:
-        if not checkIfUserExists(db, id):
-            raise HTTPException(status_code=404, detail="ID of user not found")
-        deleteUser(db, id)
-        return {"message": "User has been successfully deleted"}
-    else:
+    try:
+        isAdmin = roleCheck(True, request.cookies.get("seasonID"), db)
+        if isAdmin:
+            if not checkIfUserExists(db, id):
+                raise HTTPException(status_code=404, detail="ID of user not found")
+            deleteUser(db, id)
+            return {"message": "User has been successfully deleted"}
+        else:
+            raise HTTPException(status_code=403, detail="User does not have necessary permission")
+    except:
         raise HTTPException(status_code=403, detail="User does not have necessary permission")
 
 @router.post('/login')

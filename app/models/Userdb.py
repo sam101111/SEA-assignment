@@ -1,4 +1,5 @@
-from sqlalchemy import Boolean, Column, String
+from datetime import datetime
+from sqlalchemy import Boolean, Column, DateTime, String
 from sqlalchemy.orm import relationship
 from database import Base
 import uuid
@@ -10,5 +11,4 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     isAdmin = Column(Boolean, default=False, nullable=False)
-
     issues = relationship("Issue", back_populates="user")
