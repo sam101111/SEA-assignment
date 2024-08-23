@@ -1,5 +1,5 @@
-from services.users import getRoleById
-from services.sessions import getUserBySession
+from app.services.users import getRoleById
+from app.services.sessions import getUserBySession
 from sqlalchemy.orm import Session
 
 

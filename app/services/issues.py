@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import exists
-from models.Issuedb import Issue as IssueDb
-from models.Userdb import User as UserDb
-from schemas.issue import IssueType
+from app.models.Issuedb import Issue as IssueDb
+from app.models.Userdb import User as UserDb
+from app.schemas.issue import IssueType
 def getAllIssues(db: Session ):
     return db.query(IssueDb).all()
 

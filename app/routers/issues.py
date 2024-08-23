@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, Form, Cookie
 from typing import Annotated
 from fastapi.responses import HTMLResponse
-from middleware.sessionMangement import roleCheck
-from schemas.issue import *
-from services.issues import *
-from services.users import checkIfUserExists, getIdByEmail, getRoleById
-from services.sessions import getUserBySession
-from database import getDB
+from app.middleware.sessionMangement import roleCheck
+from app.schemas.issue import *
+from app.services.issues import *
+from app.services.users import checkIfUserExists, getIdByEmail, getRoleById
+from app.services.sessions import getUserBySession
+from app.database import getDB
 
 
 router = APIRouter()

@@ -7,3 +7,5 @@ __pycache__/
 *$py.class
 .env
 todo.md
+.venv
+.pytest_cashe

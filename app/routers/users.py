@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Cookie, Request, Depends, HTTPException, Response, Form
 from typing import Annotated, Optional
 from fastapi.responses import HTMLResponse
-from services.users import *
-from services.sessions import *
-from schemas.user import *
-from middleware.sessionMangement import roleCheck
-from database import getDB
+from app.services.users import *
+from app.services.sessions import *
+from app.schemas.user import *
+from app.middleware.sessionMangement import roleCheck
+from app.database import getDB
 from sqlalchemy.exc import IntegrityError
 import re
 import hashlib
@@ -19,6 +19,8 @@ async def getAllUsers(db: Session = Depends(getDB), sessionID: Optional[str] = C
     try:
         if sessionID:
             return  getUsers(db)
+        else:
+            raise HTTPException(status_code=403, detail="User does not have necessary permission")
     except Exception as err:
         raise HTTPException(status_code=403, detail="User does not have necessary permission")
 
@@ -27,9 +29,12 @@ async def getAllUsers(db: Session = Depends(getDB), sessionID: Optional[str] = C
 async def register(email: Annotated[str, Form()], password: Annotated[str, Form()] ,db: Session = Depends(getDB)):
     emailFormat = r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$"
     passwordFormat = r"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$"
+    if email == "" or password == "":
+        raise HTTPException(status_code=400, detail="Email or password entered is not valid format")
+        
 
     if re.match(emailFormat, email) == None or re.match(passwordFormat, password) == None:
-        raise HTTPException(status_code=400, detail="Email entered is not valid format")
+        raise HTTPException(status_code=400, detail="Email or password entered is not valid format")
     try:
         hashedPassword = hashlib.new("SHA256")
         hashedPassword.update(str(password).encode())
@@ -37,7 +42,7 @@ async def register(email: Annotated[str, Form()], password: Annotated[str, Form(
         createUser(db,email, hashedPassword.hexdigest())
     except IntegrityError as err:
         print(err)
-        raise HTTPException(status_code=422, detail="Email entered is already registered")
+        raise HTTPException(status_code=422)
     
 @router.patch('/promote/{id}')
 async def promote(request: Request, id: str, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
