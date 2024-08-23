@@ -34,9 +34,9 @@ def test_db():
 @pytest.fixture()
 def login_user():
          client.post("/api/auth/register",
-                           data={"email": "test@test.com", "password": "2£23AacD"})
+                           data={"email": "test2@test.com", "password": "2£23AacD"})
          loginRequest = client.post("/api/auth/login",
-                           data={"email": "test@test.com", "password": "2£23AacD"})
+                           data={"email": "test2@test.com", "password": "2£23AacD"})
          assert loginRequest.status_code == 200
          sessionID = loginRequest.cookies.get("sessionID")
          assert sessionID is not None
@@ -58,7 +58,7 @@ def test_get_users_unsuccessfully(test_db):
 
 def test_register_user(test_db):
     response = client.post("/api/auth/register",
-                           data={"email": "test@test.com", "password": "2£23AacD"})
+                           data={"email": "test2@test.com", "password": "2£23AacD"})
     assert response.status_code == 200
 
 def test_register_user_with_bad_password(test_db):
