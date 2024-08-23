@@ -89,7 +89,8 @@ async def login(response: Response, email: Annotated[str, Form()], password: Ann
             hashedPassword.update(str(password).encode())
             createUser(db,email, hashedPassword.hexdigest(), True)
 
-
+    if email == "" or password == "":
+        raise HTTPException(status_code=400, detail="Email or password entered is not valid format")
 
     if re.match(emailFormat, email) == None:
         raise HTTPException(status_code=400, detail="Email entered is not valid format")

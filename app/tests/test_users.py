@@ -106,8 +106,6 @@ def test_get_users(test_db, login_user ):
 
 def test_delete_user_as_admin(test_db, login_admin):
 
-        
-
             user = client.post("/api/auth/register",
                            data={"email": "test5@test.com", "password": "2£23AacD"})
             assert user.status_code == 200
@@ -170,11 +168,29 @@ def test_logout_exist(test_db):
         sessionID = loginRequest.cookies.get("sessionID")
         assert sessionID is not None
 
-        headers = {
-              "Cookie": f"sessionID={sessionID}"
-        }
         response = client.post("/api/auth/logout")
         assert response.status_code == 200
+
+def test_login_user_with_bad_password(test_db):
+    client.post("/api/auth/register",
+                           data={"email": "test2@test.com", "password": "2£23AacD"})
+    response = client.post("/api/auth/login",
+                           data={"email": "test2@test.com", "password": "password"})
+    assert response.status_code == 401
+
+def test_login_user_with_bad_email(test_db):
+    client.post("/api/auth/register",
+                           data={"email": "test2@test.com", "password": "2£23AacD"})
+    response = client.post("/api/auth/login",
+                           data={"email": "test", "password": "2£23AacD"})    
+    assert response.status_code == 400
+
+def test_login_user_with_no_data(test_db):
+    client.post("/api/auth/register",
+                           data={"email": "test2@test.com", "password": "2£23AacD"})
+    response = client.post("/api/auth/login",
+                           data={"email": "", "password": ""})
+    assert response.status_code == 422
         
       
 
