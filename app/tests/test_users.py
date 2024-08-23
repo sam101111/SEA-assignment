@@ -91,10 +91,17 @@ def test_register_user_with_no_data(test_db):
                            data={"email": "", "password": ""})
     assert response.status_code == 422
 
+def test_register_user_exists(test_db):
+            client.post("/api/auth/register",
+                           data={"email": "test5@test.com", "password": "2£23AacD"})
+            response = client.post("/api/auth/register",
+                           data={"email": "test5@test.com", "password": "2£23AacD"})
+            assert response.status_code == 422
+       
+
 def test_get_users(test_db, login_user ):
             response = client.get("/api/auth")
             assert response.status_code == 200
-
 
 
 def test_delete_user_as_admin(test_db, login_admin):
@@ -123,6 +130,53 @@ def test_delete_user_as_user(test_db, login_user):
             id = get_id.content.decode().replace('"',"")
             response = client.delete(f"/api/auth/{id}")
             assert response.status_code == 403
+
+def test_promote_user_as_admin(test_db, login_admin):
+            user = client.post("/api/auth/register",
+                           data={"email": "test5@test.com", "password": "2£23AacD"})
+            assert user.status_code == 200
+
+            get_id = client.post("/api/auth/getid", data={"email": "test5@test.com"})
+            assert user.status_code == 200
+            id = get_id.content.decode().replace('"',"")
+
+            response = client.patch(f"/api/auth/promote/{id}")
+            assert response.status_code == 200
+
+def test_promote_user_as_admin(test_db, login_user):
+            user = client.post("/api/auth/register",
+                           data={"email": "test5@test.com", "password": "2£23AacD"})
+            assert user.status_code == 200
+
+            get_id = client.post("/api/auth/getid", data={"email": "test5@test.com"})
+            assert user.status_code == 200
+            id = get_id.content.decode().replace('"',"")
+
+            response = client.patch(f"/api/auth/promote/{id}")
+            assert response.status_code == 403
+
+def test_logout_not_exist(test_db):
+        client.post("/api/auth/register",
+                           data={"email": "test2@test.com", "password": "2£23AacD"})
+        response = client.post("/api/auth/logout")
+        assert response.status_code == 404
+
+def test_logout_exist(test_db):
+        client.post("/api/auth/register",
+                           data={"email": "test2@test.com", "password": "2£23AacD"})
+                
+        loginRequest = client.post("/api/auth/login",
+                        data={"email": "test2@test.com", "password": "2£23AacD"})
+        sessionID = loginRequest.cookies.get("sessionID")
+        assert sessionID is not None
+
+        headers = {
+              "Cookie": f"sessionID={sessionID}"
+        }
+        response = client.post("/api/auth/logout")
+        assert response.status_code == 200
+        
+      
 
 
 
