@@ -16,17 +16,22 @@ async def postIssue(request: Request ,title: Annotated[str, Form()], type: Annot
     try:
         userId = getUserBySession(db,sessionID)
         print(userId)
-        createIssue(db, title, description, type, userId)
+        return createIssue(db, title, description, type, userId)
+        
     except:
         raise HTTPException(status_code=401, detail="Invalid session token provided")
 
 
 
 @router.get('/{user_id}')
-async def getByUser(user_id: str, db: Session = Depends(getDB)):
-    if not checkIfUserExists(db, user_id):
-        raise HTTPException(status_code=404, detail="ID of user not found")
-    return getIssuesByUser(db, user_id)
+async def getByUser(user_id: str, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
+    if getUserBySession(db, sessionID) == user_id or roleCheck(True, sessionID, db) == True:
+        if not checkIfUserExists(db, user_id):
+            raise HTTPException(status_code=404, detail="ID of user not found")
+        return getIssuesByUser(db, user_id)
+    else:
+        raise HTTPException(status_code=403, detail="User does not have necessary permission")
+        
 
 @router.get('/')
 async def getIssues(db: Session = Depends(getDB)):
@@ -47,7 +52,7 @@ async def patchIssue(id: str, title: Annotated[Optional[str], Form()] = None, ty
         if userIssueId == userId or userRole == True:
             issue = {
                 "title": title,
-                "type": type.value,
+                "type": type,
                 "description": description
             }
             # loops through each pair and filters out any pairs where the value is None

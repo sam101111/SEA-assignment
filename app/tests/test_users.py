@@ -147,7 +147,7 @@ def test_promote_user_as_admin(test_db, login_user):
             assert user.status_code == 200
 
             get_id = client.post("/api/auth/getid", data={"email": "test5@test.com"})
-            assert user.status_code == 200
+            assert get_id.status_code == 200
             id = get_id.content.decode().replace('"',"")
 
             response = client.patch(f"/api/auth/promote/{id}")
