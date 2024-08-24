@@ -48,7 +48,7 @@ async def patchIssue(id: str, title: Annotated[Optional[str], Form()] = None, ty
                 raise HTTPException(status_code=404, detail="ID of issue not found")
         except:
             raise HTTPException(status_code=403, detail="User does not have necessary permission")
-
+        
         if userIssueId == userId or userRole == True:
             issue = {
                 "title": title,
@@ -59,8 +59,10 @@ async def patchIssue(id: str, title: Annotated[Optional[str], Form()] = None, ty
             filteredIssue = {key: value for key, value in issue.items() if value is not None}
             print(filteredIssue)
             print(sessionID)
-            
-            updateIssue(db, id, filteredIssue)
+            try:
+                updateIssue(db, id, filteredIssue)
+            except:
+                raise HTTPException(status_code=422, detail="Must enter at least one value")
             raise HTTPException(status_code=200, detail="Issue has been updated")
         else:
             raise HTTPException(status_code=403, detail="User does not have necessary permission")
@@ -71,11 +73,12 @@ async def patchIssue(id: str, title: Annotated[Optional[str], Form()] = None, ty
 async def delete(id: str, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
     try:
         isAdmin = roleCheck(True, sessionID, db)
-        if isAdmin:
-            if not checkIfIssueExists(db, id):
-                raise HTTPException(status_code=404, detail="ID of issue not found")
-            deleteIssue(db, id)
-        else:
-            raise HTTPException(status_code=403, detail="User does not have necessary permission")
     except:
-        raise HTTPException(status_code=404, detail="session does not exist")
+        raise HTTPException(status_code=403, detail="User does not have necessary permission")
+    if isAdmin:
+        if not checkIfIssueExists(db, id):
+            raise HTTPException(status_code=404, detail="ID of issue not found")
+        deleteIssue(db, id)
+    else:
+        raise HTTPException(status_code=403, detail="User does not have necessary permission")
+ 

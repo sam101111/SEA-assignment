@@ -155,13 +155,85 @@ def test_update_issue_all(test_db, login_user):
     issue_id = create_issue.json()
     updated_issue = client.patch(f"/api/issues/{issue_id}", data={"type": "Service request", "title": "updated title", "description": "updated description"})
     assert updated_issue.status_code == 200
-    
-def test_update_issue_as_wrong_user(test_db, login_user):
+
+def test_update_issue_as_wrong_id(test_db, login_user):
     create_issue = client.post("/api/issues", data={"title": "test issue", "type": "Bug", "description": "really good test issue"})
     assert create_issue.status_code == 200
     issue_id = create_issue.json()
+    updated_issue = client.patch(f"/api/issues/1", data={"type": "Service request", "title": "updated title", "description": "updated description"})
+    assert updated_issue.status_code == 403
+    
+def test_update_issue_as_wrong_user(test_db, login_user):
+    client.post("/api/auth/register",
+                           data={"email": "test2@test.com", "password": "2£23AacD"})
+    loginRequest = client.post("/api/auth/login",
+                           data={"email": "test2@test.com", "password": "2£23AacD"})
+    assert loginRequest.status_code == 200
+      
+    issue = client.post("/api/issues", data={"title": "test issue", "type": "Bug", "description": "really good test issue"})
+    issue_response = issue.json()
+    issue_id = issue_response
+    assert issue.status_code == 200
+    logout = client.post("/api/auth/logout")
+    assert logout.status_code == 200
+    
+    create_user = client.post("/api/auth/register",
+                data={"email": "test15@test.com", "password": "2£23AacD"})
+    assert create_user.status_code == 200
+    loginRequest = client.post("/api/auth/login",
+                           data={"email": "test15@test.com", "password": "2£23AacD"})
+    assert loginRequest.status_code == 200
+    updated_issue = client.patch(f"/api/issues/{issue_id}", data={"type": "Service request", "title": "updated title", "description": "updated description"})
+    assert updated_issue.status_code == 403
+    
+        
+def test_update_issue_as_admin(test_db, login_user):
+    client.post("/api/auth/register",
+                           data={"email": "test2@test.com", "password": "2£23AacD"})
+    loginRequest = client.post("/api/auth/login",
+                           data={"email": "test2@test.com", "password": "2£23AacD"})
+    assert loginRequest.status_code == 200
+      
+    issue = client.post("/api/issues", data={"title": "test issue", "type": "Bug", "description": "really good test issue"})
+    issue_response = issue.json()
+    issue_id = issue_response
+    assert issue.status_code == 200
+    logout = client.post("/api/auth/logout")
+    assert logout.status_code == 200
+    
+    loginRequest = client.post("/api/auth/login",
+                           data={"email": "admintest@test.com", "password": "test1A$c34"})
+    assert loginRequest.status_code == 200
     updated_issue = client.patch(f"/api/issues/{issue_id}", data={"type": "Service request", "title": "updated title", "description": "updated description"})
     assert updated_issue.status_code == 200
+    
+def test_update_issue_empty(test_db,login_user):
+    create_issue = client.post("/api/issues", data={"title": "test issue", "type": "Bug", "description": "really good test issue"})
+    assert create_issue.status_code == 200
+    issue_id = create_issue.json()
+    updated_issue = client.patch(f"/api/issues/{issue_id}", data={""})
+    assert updated_issue.status_code == 422
+    
+def test_delete_issue_wrong_id(test_db, login_admin):
+    create_issue = client.post("/api/issues", data={"title": "test issue", "type": "Bug", "description": "really good test issue"})
+    assert create_issue.status_code == 200
+    issue_id = create_issue.json()
+    updated_issue = client.delete(f"/api/issues/{issue_id}")
+    assert updated_issue.status_code == 200
+    
+def test_delete_issue_as_admin(test_db, login_admin):
+    create_issue = client.post("/api/issues", data={"title": "test issue", "type": "Bug", "description": "really good test issue"})
+    assert create_issue.status_code == 200
+    updated_issue = client.delete(f"/api/issues/1")
+    assert updated_issue.status_code == 404
+    
+def test_delete_issue_as_user(test_db, login_user):
+    create_issue = client.post("/api/issues", data={"title": "test issue", "type": "Bug", "description": "really good test issue"})
+    assert create_issue.status_code == 200
+    issue_id = create_issue.json()
+    updated_issue = client.delete(f"/api/issues/{issue_id}")
+    assert updated_issue.status_code == 403
+
     
 
 
