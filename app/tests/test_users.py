@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.database import Base, getDB
+from app.database import Base, get_db
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -62,7 +62,7 @@ def login_admin():
     assert response.status_code == 200
 
 
-app.dependency_overrides[getDB] = override_get_db
+app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
 

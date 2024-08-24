@@ -5,15 +5,15 @@ from app.models.Userdb import User as UserDb
 from app.schemas.issue import IssueType
 
 
-def getAllIssues(db: Session):
+def get_all_issues(db: Session):
     return db.query(IssueDb).all()
 
 
-def getIssuesByUser(db: Session, id: str):
+def get_issues_by_user(db: Session, id: str):
     return db.query(IssueDb).filter(IssueDb.user_id == id).all()
 
 
-def createIssue(
+def create_issue(
     db: Session, title: str, description: str, type: IssueType, user_id: str
 ):
     newIssue = IssueDb(
@@ -24,25 +24,25 @@ def createIssue(
     return newIssue.id
 
 
-def getIssueByID(db: Session, id: str):
+def get_Issue_by_id(db: Session, id: str):
     return db.query(IssueDb).filter(IssueDb.id == id).scalar()
 
 
-def updateIssue(db: Session, id: str, toUpdate):
+def update_issue(db: Session, id: str, toUpdate):
     db.query(IssueDb).filter(IssueDb.id == id).update(toUpdate)
     db.commit()
 
 
-def deleteIssue(db: Session, id: str):
+def delete_issue(db: Session, id: str):
     toDelete = db.query(IssueDb).filter(IssueDb.id == id).first()
     db.delete(toDelete)
     db.commit()
 
 
-def checkIfIssueExists(db: Session, id: str):
+def check_if_issue_exists(db: Session, id: str):
     return db.query(exists().where(IssueDb.id == id)).scalar()
 
 
-def getUserByIssueID(db: Session, issueId: str):
+def get_user_by_issue_id(db: Session, issueId: str):
     issue = db.query(IssueDb).filter(IssueDb.id == issueId).first()
     return issue.user_id

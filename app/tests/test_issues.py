@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.database import Base, getDB
+from app.database import Base, get_db
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -35,11 +35,11 @@ def login_user():
     client.post(
         "/api/auth/register", data={"email": "test2@test.com", "password": "2£23AacD"}
     )
-    loginRequest = client.post(
+    login_request = client.post(
         "/api/auth/login", data={"email": "test2@test.com", "password": "2£23AacD"}
     )
-    assert loginRequest.status_code == 200
-    sessionID = loginRequest.cookies.get("sessionID")
+    assert login_request.status_code == 200
+    sessionID = login_request.cookies.get("sessionID")
     assert sessionID is not None
     yield
     headers = {"Cookie": f"sessionID={sessionID}"}
@@ -49,12 +49,12 @@ def login_user():
 
 @pytest.fixture()
 def login_admin():
-    loginRequest = client.post(
+    login_request = client.post(
         "/api/auth/login",
         data={"email": "admintest@test.com", "password": "test1A$c34"},
     )
-    assert loginRequest.status_code == 200
-    sessionID = loginRequest.cookies.get("sessionID")
+    assert login_request.status_code == 200
+    sessionID = login_request.cookies.get("sessionID")
     assert sessionID is not None
     yield
     headers = {"Cookie": f"sessionID={sessionID}"}
@@ -62,7 +62,7 @@ def login_admin():
     assert response.status_code == 200
 
 
-app.dependency_overrides[getDB] = override_get_db
+app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
 
@@ -164,10 +164,10 @@ def test_get_user_issues_as_wrong_user(test_db):
     client.post(
         "/api/auth/register", data={"email": "test2@test.com", "password": "2£23AacD"}
     )
-    loginRequest = client.post(
+    login_request = client.post(
         "/api/auth/login", data={"email": "test2@test.com", "password": "2£23AacD"}
     )
-    assert loginRequest.status_code == 200
+    assert login_request.status_code == 200
 
     issue = client.post(
         "/api/issues",
@@ -188,10 +188,10 @@ def test_get_user_issues_as_wrong_user(test_db):
     )
     assert create_user.status_code == 200
 
-    loginRequest = client.post(
+    login_request = client.post(
         "/api/auth/login", data={"email": "test15@test.com", "password": "2£23AacD"}
     )
-    assert loginRequest.status_code == 200
+    assert login_request.status_code == 200
 
     get_id = client.post("/api/auth/getid", data={"email": "test2@test.com"})
     assert get_id.status_code == 200
@@ -282,10 +282,10 @@ def test_update_issue_as_wrong_user(test_db, login_user):
     client.post(
         "/api/auth/register", data={"email": "test2@test.com", "password": "2£23AacD"}
     )
-    loginRequest = client.post(
+    login_request = client.post(
         "/api/auth/login", data={"email": "test2@test.com", "password": "2£23AacD"}
     )
-    assert loginRequest.status_code == 200
+    assert login_request.status_code == 200
 
     issue = client.post(
         "/api/issues",
@@ -305,10 +305,10 @@ def test_update_issue_as_wrong_user(test_db, login_user):
         "/api/auth/register", data={"email": "test15@test.com", "password": "2£23AacD"}
     )
     assert create_user.status_code == 200
-    loginRequest = client.post(
+    login_request = client.post(
         "/api/auth/login", data={"email": "test15@test.com", "password": "2£23AacD"}
     )
-    assert loginRequest.status_code == 200
+    assert login_request.status_code == 200
     updated_issue = client.patch(
         f"/api/issues/{issue_id}",
         data={
@@ -324,10 +324,10 @@ def test_update_issue_as_admin(test_db, login_user):
     client.post(
         "/api/auth/register", data={"email": "test2@test.com", "password": "2£23AacD"}
     )
-    loginRequest = client.post(
+    login_request = client.post(
         "/api/auth/login", data={"email": "test2@test.com", "password": "2£23AacD"}
     )
-    assert loginRequest.status_code == 200
+    assert login_request.status_code == 200
 
     issue = client.post(
         "/api/issues",
@@ -343,11 +343,11 @@ def test_update_issue_as_admin(test_db, login_user):
     logout = client.post("/api/auth/logout")
     assert logout.status_code == 200
 
-    loginRequest = client.post(
+    login_request = client.post(
         "/api/auth/login",
         data={"email": "admintest@test.com", "password": "test1A$c34"},
     )
-    assert loginRequest.status_code == 200
+    assert login_request.status_code == 200
     updated_issue = client.patch(
         f"/api/issues/{issue_id}",
         data={

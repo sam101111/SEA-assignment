@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, Form, Cookie
 from typing import Annotated
 from fastapi.responses import HTMLResponse
-from app.middleware.sessionMangement import roleCheck
+from app.middleware.sessionMangement import role_check
 from app.schemas.issue import *
 from app.services.issues import *
-from app.services.users import checkIfUserExists, getIdByEmail, getRoleById
-from app.services.sessions import getUserBySession
-from app.database import getDB
+from app.services.users import check_if_user_exists, get_role_by_id
+from app.services.sessions import get_user_by_session
+from app.database import get_db
 
 
 router = APIRouter()
@@ -18,29 +18,29 @@ async def postIssue(
     title: Annotated[str, Form()],
     type: Annotated[IssueType, Form()],
     description: Annotated[str, Form()],
-    db: Session = Depends(getDB),
+    db: Session = Depends(get_db),
     sessionID: Optional[str] = Cookie(None),
 ):
     try:
-        userId = getUserBySession(db, sessionID)
+        userId = get_user_by_session(db, sessionID)
         print(userId)
-        return createIssue(db, title, description, type, userId)
+        return create_issue(db, title, description, type, userId)
 
     except:
         raise HTTPException(status_code=401, detail="Invalid session token provided")
 
 
 @router.get("/{user_id}")
-async def getByUser(
-    user_id: str, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)
+async def get_by_user(
+    user_id: str, db: Session = Depends(get_db), sessionID: Optional[str] = Cookie(None)
 ):
     if (
-        getUserBySession(db, sessionID) == user_id
-        or roleCheck(True, sessionID, db) == True
+        get_user_by_session(db, sessionID) == user_id
+        or role_check(True, sessionID, db) == True
     ):
-        if not checkIfUserExists(db, user_id):
+        if not check_if_user_exists(db, user_id):
             raise HTTPException(status_code=404, detail="ID of user not found")
-        return getIssuesByUser(db, user_id)
+        return get_issues_by_user(db, user_id)
     else:
         raise HTTPException(
             status_code=403, detail="User does not have necessary permission"
@@ -48,8 +48,8 @@ async def getByUser(
 
 
 @router.get("/")
-async def getIssues(db: Session = Depends(getDB)):
-    return getAllIssues(db)
+async def getIssues(db: Session = Depends(get_db)):
+    return get_all_issues(db)
 
 
 @router.patch("/{id}")
@@ -58,14 +58,14 @@ async def patchIssue(
     title: Annotated[Optional[str], Form()] = None,
     type: Annotated[Optional[IssueType], Form()] = None,
     description: Annotated[Optional[str], Form()] = None,
-    db: Session = Depends(getDB),
+    db: Session = Depends(get_db),
     sessionID: Optional[str] = Cookie(None),
 ):
     try:
-        userId = getUserBySession(db, sessionID)
-        userRole = getRoleById(db, userId)
-        userIssueId = getUserByIssueID(db, id)
-        if not checkIfIssueExists(db, id):
+        userId = get_user_by_session(db, sessionID)
+        userRole = get_role_by_id(db, userId)
+        userIssueId = get_user_by_issue_id(db, id)
+        if not check_if_issue_exists(db, id):
             raise HTTPException(status_code=404, detail="ID of issue not found")
     except:
         raise HTTPException(
@@ -81,7 +81,7 @@ async def patchIssue(
         print(filteredIssue)
         print(sessionID)
         try:
-            updateIssue(db, id, filteredIssue)
+            update_issue(db, id, filteredIssue)
         except:
             raise HTTPException(status_code=422, detail="Must enter at least one value")
         raise HTTPException(status_code=200, detail="Issue has been updated")
@@ -93,18 +93,18 @@ async def patchIssue(
 
 @router.delete("/{id}")
 async def delete(
-    id: str, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)
+    id: str, db: Session = Depends(get_db), sessionID: Optional[str] = Cookie(None)
 ):
     try:
-        isAdmin = roleCheck(True, sessionID, db)
+        is_admin = role_check(True, sessionID, db)
     except:
         raise HTTPException(
             status_code=403, detail="User does not have necessary permission"
         )
-    if isAdmin:
-        if not checkIfIssueExists(db, id):
+    if is_admin:
+        if not check_if_issue_exists(db, id):
             raise HTTPException(status_code=404, detail="ID of issue not found")
-        deleteIssue(db, id)
+        delete_issue(db, id)
     else:
         raise HTTPException(
             status_code=403, detail="User does not have necessary permission"

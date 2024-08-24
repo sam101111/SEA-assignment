@@ -4,8 +4,8 @@ from fastapi.responses import HTMLResponse
 from app.services.users import *
 from app.services.sessions import *
 from app.schemas.user import *
-from app.middleware.sessionMangement import roleCheck
-from app.database import getDB
+from app.middleware.sessionMangement import role_check
+from app.database import get_db
 from sqlalchemy.exc import IntegrityError
 import re
 import hashlib
@@ -15,11 +15,11 @@ router = APIRouter()
 
 @router.get("/")
 async def getAllUsers(
-    db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)
+    db: Session = Depends(get_db), sessionID: Optional[str] = Cookie(None)
 ):
     try:
         if sessionID:
-            return getUsers(db)
+            return get_users(db)
         else:
             raise HTTPException(
                 status_code=403, detail="User does not have necessary permission"
@@ -34,27 +34,27 @@ async def getAllUsers(
 async def register(
     email: Annotated[str, Form()],
     password: Annotated[str, Form()],
-    db: Session = Depends(getDB),
+    db: Session = Depends(get_db),
 ):
-    emailFormat = r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$"
-    passwordFormat = r"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$"
+    email_format = r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$"
+    password_format = r"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$"
     if email == "" or password == "":
         raise HTTPException(
             status_code=400, detail="Email or password entered is not valid format"
         )
 
     if (
-        re.match(emailFormat, email) == None
-        or re.match(passwordFormat, password) == None
+        re.match(email_format, email) == None
+        or re.match(password_format, password) == None
     ):
         raise HTTPException(
             status_code=400, detail="Email or password entered is not valid format"
         )
     try:
-        hashedPassword = hashlib.new("SHA256")
-        hashedPassword.update(str(password).encode())
+        hashed_password = hashlib.new("SHA256")
+        hashed_password.update(str(password).encode())
 
-        createUser(db, email, hashedPassword.hexdigest())
+        create_user(db, email, hashed_password.hexdigest())
     except IntegrityError as err:
         print(err)
         raise HTTPException(status_code=422)
@@ -64,20 +64,20 @@ async def register(
 async def promote(
     request: Request,
     id: str,
-    db: Session = Depends(getDB),
+    db: Session = Depends(get_db),
     sessionID: Optional[str] = Cookie(None),
 ):
     try:
-        isAdmin = roleCheck(True, sessionID, db)
-        if isAdmin:
-            if not checkIfUserExists(db, id):
+        is_admin = role_check(True, sessionID, db)
+        if is_admin:
+            if not check_if_user_exists(db, id):
                 raise HTTPException(status_code=404, detail="ID of user not found")
-            if getRoleById(db, id) == True:
+            if get_role_by_id(db, id) == True:
                 raise HTTPException(
                     status_code=403, detail="User does not have necessary permission"
                 )
 
-            promoteUser(db, id)
+            promote_user(db, id)
             return {"message": "User has been successfully promoted"}
         else:
             raise HTTPException(status_code=400, detail="User already an admin")
@@ -92,15 +92,15 @@ async def promote(
 async def delete(
     request: Request,
     id: str,
-    db: Session = Depends(getDB),
+    db: Session = Depends(get_db),
     sessionID: Optional[str] = Cookie(None),
 ):
     try:
-        isAdmin = roleCheck(True, sessionID, db)
-        if isAdmin:
-            if not checkIfUserExists(db, id):
+        is_admin = role_check(True, sessionID, db)
+        if is_admin:
+            if not check_if_user_exists(db, id):
                 raise HTTPException(status_code=404, detail="ID of user not found")
-            deleteUser(db, id)
+            delete_user(db, id)
             return {"message": "User has been successfully deleted"}
         else:
             raise HTTPException(
@@ -118,30 +118,30 @@ async def login(
     response: Response,
     email: Annotated[str, Form()],
     password: Annotated[str, Form()],
-    db: Session = Depends(getDB),
+    db: Session = Depends(get_db),
 ):
-    emailFormat = r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$"
+    email_format = r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$"
     if email == "admintest@test.com" and password == "test1A$c34":
-        if not checkIfUserExistsByEmail(db, email):
-            hashedPassword = hashlib.new("SHA256")
-            hashedPassword.update(str(password).encode())
-            createUser(db, email, hashedPassword.hexdigest(), True)
+        if not check_if_User_exists_by_email(db, email):
+            hashed_password = hashlib.new("SHA256")
+            hashed_password.update(str(password).encode())
+            create_user(db, email, hashed_password.hexdigest(), True)
 
     if email == "" or password == "":
         raise HTTPException(
             status_code=400, detail="Email or password entered is not valid format"
         )
 
-    if re.match(emailFormat, email) == None:
+    if re.match(email_format, email) == None:
         raise HTTPException(status_code=400, detail="Email entered is not valid format")
-    if not checkIfUserExistsByEmail(db, email):
+    if not check_if_User_exists_by_email(db, email):
         raise HTTPException(status_code=404, detail="Email does not exist in system")
 
-    if checkPassword(db, password, email) == False:
+    if check_password(db, password, email) == False:
         raise HTTPException(status_code=401, detail="Incorrect email or password")
 
     response.set_cookie(
-        key="sessionID", value=f"{createSession(db, getIdByEmail(db, email))}"
+        key="sessionID", value=f"{create_session(db, get_id_by_email(db, email))}"
     )
 
     return {"message": "Session has been successfully created"}
@@ -151,12 +151,12 @@ async def login(
 async def get_id(
     response: Response,
     email: Annotated[str, Form()],
-    db: Session = Depends(getDB),
+    db: Session = Depends(get_db),
     sessionID: Optional[str] = Cookie(None),
 ):
     try:
         if sessionID:
-            return getIdByEmail(db, email)
+            return get_id_by_email(db, email)
     except:
         raise HTTPException(status_code=404, detail="session does not exist")
 
@@ -165,10 +165,10 @@ async def get_id(
 async def logout(
     response: Response,
     sessionID: Optional[str] = Cookie(None),
-    db: Session = Depends(getDB),
+    db: Session = Depends(get_db),
 ):
     try:
-        deleteSession(db, sessionID)
+        delete_session(db, sessionID)
         response.delete_cookie("sessionID")
     except:
         raise HTTPException(status_code=404, detail="session does not exist")
