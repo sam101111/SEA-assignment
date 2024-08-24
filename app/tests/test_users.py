@@ -35,11 +35,11 @@ def login_user():
     client.post(
         "/api/auth/register", data={"email": "test2@test.com", "password": "2£23AacD"}
     )
-    loginRequest = client.post(
+    login_request = client.post(
         "/api/auth/login", data={"email": "test2@test.com", "password": "2£23AacD"}
     )
-    assert loginRequest.status_code == 200
-    sessionID = loginRequest.cookies.get("sessionID")
+    assert login_request.status_code == 200
+    sessionID = login_request.cookies.get("sessionID")
     assert sessionID is not None
     yield
     headers = {"Cookie": f"sessionID={sessionID}"}
@@ -49,12 +49,12 @@ def login_user():
 
 @pytest.fixture()
 def login_admin():
-    loginRequest = client.post(
+    login_request = client.post(
         "/api/auth/login",
         data={"email": "admintest@test.com", "password": "test1A$c34"},
     )
-    assert loginRequest.status_code == 200
-    sessionID = loginRequest.cookies.get("sessionID")
+    assert login_request.status_code == 200
+    sessionID = login_request.cookies.get("sessionID")
     assert sessionID is not None
     yield
     headers = {"Cookie": f"sessionID={sessionID}"}
@@ -183,10 +183,10 @@ def test_logout_exist(test_db):
         "/api/auth/register", data={"email": "test2@test.com", "password": "2£23AacD"}
     )
 
-    loginRequest = client.post(
+    login_request = client.post(
         "/api/auth/login", data={"email": "test2@test.com", "password": "2£23AacD"}
     )
-    sessionID = loginRequest.cookies.get("sessionID")
+    sessionID = login_request.cookies.get("sessionID")
     assert sessionID is not None
 
     response = client.post("/api/auth/logout")
