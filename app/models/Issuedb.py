@@ -1,7 +1,7 @@
 from sqlalchemy import  Column, ForeignKey, String, Enum as dbEnum
 from sqlalchemy.orm import relationship
-from schemas.issue import IssueType
-from database import Base
+from app.schemas.issue import IssueType
+from app.database import Base
 import uuid
 
 class Issue(Base):

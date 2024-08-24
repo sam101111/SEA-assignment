@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
-from models.Userdb import User as UserDb
-from schemas.user import *
+from app.models.Userdb import User as UserDb
+from app.schemas.user import *
 from sqlalchemy.sql import exists
 import hashlib
 
-def createUser(db: Session, email: str, password: str):
-    user = UserDb(email = email, password = password, isAdmin = False)
+def createUser(db: Session, email: str, password: str, isAdmin: bool = False):
+    user = UserDb(email = email, password = password, isAdmin = isAdmin)
     db.add(user)
     db.commit()
 
