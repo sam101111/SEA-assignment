@@ -4,11 +4,12 @@ from sqlalchemy.orm import Session
 
 
 def roleCheck(protected: bool, sessionId: str, db: Session):
-    userID = getUserBySession(db,sessionId)
+    userID = getUserBySession(db, sessionId)
     userRole = getRoleById(db, userID)
     if userRole == protected:
         return True
     else:
         return False
-    
+
+
 # return the userID from the session ID

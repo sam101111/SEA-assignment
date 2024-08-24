@@ -16,72 +16,83 @@ router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
 
-@router.get('/', response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse)
 def home(req: Request, sessionID: Optional[str] = Cookie(None)):
-    context = {'request': req}
+    context = {"request": req}
     if sessionID:
         return templates.TemplateResponse(name="/index.html", request=req)
     else:
         return templates.TemplateResponse("/unauthorised.html", context)
 
-@router.get('/issues', response_class=HTMLResponse )
-def home(req: Request, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
+
+@router.get("/issues", response_class=HTMLResponse)
+def home(
+    req: Request, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)
+):
     try:
         if sessionID:
             issues = getIssuesByUser(db, getUserBySession(db, sessionID))
-            context = {'request': req, "issues": issues}
+            context = {"request": req, "issues": issues}
             return templates.TemplateResponse("issues.html", context)
         else:
             return templates.TemplateResponse("unauthorised.html", context)
     except:
-        context = {'request': req}
+        context = {"request": req}
         return templates.TemplateResponse("unauthorised.html", context)
 
-@router.get('/directory', response_class=HTMLResponse )
-def home(req: Request, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)):
-        try:
-            if sessionID:
-                users = getUsers(db)
-                userRole = getRoleById(db, getUserBySession(db, sessionID))
-                context = {'request': req, "users": users, "role": userRole}
-                return templates.TemplateResponse("userDirectory.html", context)
-            else:
-                return templates.TemplateResponse("unauthorised.html", context)
 
-        except:
-            context = {'request': req}
+@router.get("/directory", response_class=HTMLResponse)
+def home(
+    req: Request, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)
+):
+    try:
+        if sessionID:
+            users = getUsers(db)
+            userRole = getRoleById(db, getUserBySession(db, sessionID))
+            context = {"request": req, "users": users, "role": userRole}
+            return templates.TemplateResponse("userDirectory.html", context)
+        else:
             return templates.TemplateResponse("unauthorised.html", context)
 
+    except:
+        context = {"request": req}
+        return templates.TemplateResponse("unauthorised.html", context)
 
-@router.get('/login', response_class=HTMLResponse)
+
+@router.get("/login", response_class=HTMLResponse)
 def home(req: Request):
-    context = {'request': req}
+    context = {"request": req}
     return templates.TemplateResponse("login.html", context)
 
-@router.get('/manage', response_class=HTMLResponse)
-async def home( req: Request, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None) ):
-    context = {'request': req}
+
+@router.get("/manage", response_class=HTMLResponse)
+async def home(
+    req: Request, db: Session = Depends(getDB), sessionID: Optional[str] = Cookie(None)
+):
+    context = {"request": req}
     try:
-        isAdmin = roleCheck(True, sessionID, db )
+        isAdmin = roleCheck(True, sessionID, db)
 
         if isAdmin:
-            issues =getAllIssues(db)
-            context = {'request': req, "issues": issues}
+            issues = getAllIssues(db)
+            context = {"request": req, "issues": issues}
 
-            return templates.TemplateResponse("manage.html", context )
+            return templates.TemplateResponse("manage.html", context)
         else:
             return templates.TemplateResponse("unauthorised.html", context)
     except:
         return templates.TemplateResponse("unauthorised.html", context)
-        
-@router.get('/successfulLogin', response_class=HTMLResponse)
-async def home( req: Request, db: Session = Depends(getDB) ):
-    issues =getAllIssues(db)
-    context = {'request': req, "issues": issues}
 
-    return templates.TemplateResponse("successfulLogin.html", context )
 
-@router.get('/register',  response_class=HTMLResponse)
+@router.get("/successfulLogin", response_class=HTMLResponse)
+async def home(req: Request, db: Session = Depends(getDB)):
+    issues = getAllIssues(db)
+    context = {"request": req, "issues": issues}
+
+    return templates.TemplateResponse("successfulLogin.html", context)
+
+
+@router.get("/register", response_class=HTMLResponse)
 async def register(req: Request):
-    context = {'request': req}
+    context = {"request": req}
     return templates.TemplateResponse("register.html", context)

@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from app.database import Base
 import uuid
 
+
 class User(Base):
     __tablename__ = "users"
 
