@@ -13,13 +13,13 @@ router = APIRouter()
 
 
 @router.post("/")
-async def postIssue(
+async def post_issue(
     request: Request,
     title: Annotated[str, Form()],
     type: Annotated[IssueType, Form()],
     description: Annotated[str, Form()],
     db: Session = Depends(get_db),
-    sessionID: Optional[str] = Cookie(None),
+    sessionID: str = Cookie(None),
 ):
     try:
         userId = get_user_by_session(db, sessionID)
@@ -32,7 +32,7 @@ async def postIssue(
 
 @router.get("/{user_id}")
 async def get_by_user(
-    user_id: str, db: Session = Depends(get_db), sessionID: Optional[str] = Cookie(None)
+    user_id: str, db: Session = Depends(get_db), sessionID: str = Cookie(None)
 ):
     if (
         get_user_by_session(db, sessionID) == user_id
@@ -48,18 +48,18 @@ async def get_by_user(
 
 
 @router.get("/")
-async def getIssues(db: Session = Depends(get_db)):
+async def get_issues(db: Session = Depends(get_db)):
     return get_all_issues(db)
 
 
 @router.patch("/{id}")
-async def patchIssue(
+async def patch_issue(
     id: str,
     title: Annotated[Optional[str], Form()] = None,
     type: Annotated[Optional[IssueType], Form()] = None,
     description: Annotated[Optional[str], Form()] = None,
     db: Session = Depends(get_db),
-    sessionID: Optional[str] = Cookie(None),
+    sessionID: str = Cookie(None),
 ):
     try:
         userId = get_user_by_session(db, sessionID)
@@ -93,7 +93,7 @@ async def patchIssue(
 
 @router.delete("/{id}")
 async def delete(
-    id: str, db: Session = Depends(get_db), sessionID: Optional[str] = Cookie(None)
+    id: str, db: Session = Depends(get_db), sessionID: str = Cookie(None)
 ):
     try:
         is_admin = role_check(True, sessionID, db)

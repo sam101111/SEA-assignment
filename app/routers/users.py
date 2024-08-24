@@ -14,8 +14,8 @@ router = APIRouter()
 
 
 @router.get("/")
-async def getAllUsers(
-    db: Session = Depends(get_db), sessionID: Optional[str] = Cookie(None)
+async def get_all_users(
+    db: Session = Depends(get_db), sessionID: str = Cookie(None)
 ):
     try:
         if sessionID:
@@ -65,7 +65,7 @@ async def promote(
     request: Request,
     id: str,
     db: Session = Depends(get_db),
-    sessionID: Optional[str] = Cookie(None),
+    sessionID: str = Cookie(None),
 ):
     try:
         is_admin = role_check(True, sessionID, db)
@@ -93,7 +93,7 @@ async def delete(
     request: Request,
     id: str,
     db: Session = Depends(get_db),
-    sessionID: Optional[str] = Cookie(None),
+    sessionID: str = Cookie(None),
 ):
     try:
         is_admin = role_check(True, sessionID, db)
@@ -152,7 +152,7 @@ async def get_id(
     response: Response,
     email: Annotated[str, Form()],
     db: Session = Depends(get_db),
-    sessionID: Optional[str] = Cookie(None),
+    sessionID: str = Cookie(None),
 ):
     try:
         if sessionID:
@@ -164,7 +164,7 @@ async def get_id(
 @router.post("/logout")
 async def logout(
     response: Response,
-    sessionID: Optional[str] = Cookie(None),
+    sessionID: str = Cookie(None),
     db: Session = Depends(get_db),
 ):
     try:

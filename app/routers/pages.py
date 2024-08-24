@@ -3,7 +3,7 @@ from fastapi import APIRouter, Request, Depends, Cookie
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from app.services.users import get_role_by_id, get_users, get_role_by_id
-from app.database import  get_db
+from app.database import get_db
 from app.services.issues import get_all_issues, get_issues_by_user
 from app.services.sessions import get_user_by_session
 from sqlalchemy.orm import Session
@@ -79,6 +79,7 @@ async def manage_page(
             return templates.TemplateResponse("unauthorised.html", context)
     except:
         return templates.TemplateResponse("unauthorised.html", context)
+
 
 @router.get("/register", response_class=HTMLResponse)
 async def register_page(req: Request):
