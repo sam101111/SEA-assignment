@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from app.services.users import get_role_by_id, get_users, get_role_by_id
 from app.database import get_db
 from app.services.issues import get_all_issues, get_issues_by_user
-from app.services.sessions import get_user_by_session
+from app.services.sessions import check_if_session_exists, get_user_by_session
 from sqlalchemy.orm import Session
 from app.middleware.sessionMangement import role_check
 
@@ -14,9 +14,9 @@ templates = Jinja2Templates(directory="app/templates")
 
 
 @router.get("/", response_class=HTMLResponse)
-def home_page(req: Request, sessionID: Optional[str] = Cookie(None)):
+def home_page(req: Request, sessionID: Optional[str] = Cookie(None), db: Session = Depends(get_db)):
     context = {"request": req}
-    if sessionID:
+    if check_if_session_exists(db, sessionID):
         return templates.TemplateResponse(name="index.html", request=req)
     else:
         return templates.TemplateResponse("unauthorised.html", context)
@@ -27,7 +27,7 @@ def issues_page(
     req: Request, db: Session = Depends(get_db), sessionID: Optional[str] = Cookie(None)
 ):
     try:
-        if sessionID:
+        if check_if_session_exists(db, sessionID):
             issues = get_issues_by_user(db, get_user_by_session(db, sessionID))
             context = {"request": req, "issues": issues}
             return templates.TemplateResponse("issues.html", context)
@@ -43,7 +43,7 @@ def directory_page(
     req: Request, db: Session = Depends(get_db), sessionID: Optional[str] = Cookie(None)
 ):
     try:
-        if sessionID:
+        if check_if_session_exists(db, sessionID):
             users = get_users(db)
             userRole = get_role_by_id(db, get_user_by_session(db, sessionID))
             context = {"request": req, "users": users, "role": userRole}

@@ -18,7 +18,9 @@ async def get_all_users(
     db: Session = Depends(get_db), sessionID: str = Cookie(None)
 ):
     try:
-        if sessionID:
+        print(check_if_session_exists(db, sessionID))
+        if check_if_session_exists(db, sessionID):
+            
             return get_users(db)
         else:
             raise HTTPException(
@@ -155,7 +157,7 @@ async def get_id(
     sessionID: str = Cookie(None),
 ):
     try:
-        if sessionID:
+        if check_if_session_exists(db, sessionID):
             return get_id_by_email(db, email)
     except:
         raise HTTPException(status_code=404, detail="session does not exist")
