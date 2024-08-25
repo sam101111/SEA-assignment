@@ -33,7 +33,7 @@ async def post_issue(
 @router.get("/{user_id}")
 async def get_by_user(
     user_id: str, db: Session = Depends(get_db), sessionID: str = Cookie(None)
-):
+) -> list[GetIssuesByUserResponse]:
     if (
         get_user_by_session(db, sessionID) == user_id
         or role_check(True, sessionID, db) == True
@@ -48,7 +48,7 @@ async def get_by_user(
 
 
 @router.get("/")
-async def get_issues(db: Session = Depends(get_db), sessionID: str = Cookie(None)):
+async def get_issues(db: Session = Depends(get_db), sessionID: str = Cookie(None)) -> list[GetIssuesResponse]:
     try:
         if not check_if_session_exists(db, sessionID):
             raise HTTPException(status_code=404, detail="ID of issue not found")
@@ -77,7 +77,8 @@ async def patch_issue(
         raise HTTPException(
             status_code=403, detail="User does not have necessary permission"
         )
-
+        
+    # Checks if the Issue that is being updated is owned by the user that made the request or if the user is an admin, if not raise 403
     if userIssueId == userId or userRole == True:
         issue = {"title": title, "type": type, "description": description}
         # loops through each pair and filters out any pairs where the value is None

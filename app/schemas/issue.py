@@ -15,6 +15,13 @@ class IssueBase(BaseModel):
     type: IssueType
     description: str
 
+class GetIssuesByUserResponse(IssueBase):
+    id: str
+    user_id: str
+
+class GetIssuesResponse(IssueBase):
+    id: str
+    user_id: str
 
 class CreateIssue(IssueBase):
     user_id: str

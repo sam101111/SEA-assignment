@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 @router.get("/")
-async def get_all_users(db: Session = Depends(get_db), sessionID: str = Cookie(None)):
+async def get_all_users(db: Session = Depends(get_db), sessionID: str = Cookie(None)) -> list[GetAllUsersResponse]:
     try:
         print(check_if_session_exists(db, sessionID))
         if check_if_session_exists(db, sessionID):
