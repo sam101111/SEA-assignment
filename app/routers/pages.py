@@ -14,7 +14,9 @@ templates = Jinja2Templates(directory="app/templates")
 
 
 @router.get("/", response_class=HTMLResponse)
-def home_page(req: Request, sessionID: Optional[str] = Cookie(None), db: Session = Depends(get_db)):
+def home_page(
+    req: Request, sessionID: Optional[str] = Cookie(None), db: Session = Depends(get_db)
+):
     context = {"request": req}
     if check_if_session_exists(db, sessionID):
         return templates.TemplateResponse(name="index.html", request=req)

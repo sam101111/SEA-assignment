@@ -5,7 +5,7 @@ from app.middleware.sessionMangement import role_check
 from app.schemas.issue import *
 from app.services.issues import *
 from app.services.users import check_if_user_exists, get_role_by_id
-from app.services.sessions import get_user_by_session
+from app.services.sessions import check_if_session_exists, get_user_by_session
 from app.database import get_db
 
 
@@ -48,9 +48,15 @@ async def get_by_user(
 
 
 @router.get("/")
-async def get_issues(db: Session = Depends(get_db)):
-    return get_all_issues(db)
-
+async def get_issues(db: Session = Depends(get_db), sessionID: str = Cookie(None)):
+    try:
+        if not check_if_session_exists(db, sessionID):
+            raise HTTPException(status_code=404, detail="ID of issue not found")
+        return get_all_issues(db)
+    except:
+        raise HTTPException(
+            status_code=403, detail="User does not have necessary permission"
+        )
 
 @router.patch("/{id}")
 async def patch_issue(

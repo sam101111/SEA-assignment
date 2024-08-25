@@ -10,4 +10,3 @@ def role_check(protected: bool, session_id: str, db: Session):
         return True
     else:
         return False
-
