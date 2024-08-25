@@ -15,6 +15,8 @@ pip install fastapi jinja2 uvicorn sqlalchemy httpx pytest
 ```
 
 ## Running the application
+> [!CAUTION]
+> This application requires Python 3.11+, it is highly suggested to use Python 3.12.4
 
 to run a local instance of the application you can run the following command in the root of the project:
 
