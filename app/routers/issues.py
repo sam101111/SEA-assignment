@@ -11,7 +11,9 @@ from app.database import get_db
 
 router = APIRouter()
 
-
+# Within the codebase Form() is used extensively, 
+# this is because to directly send HTML form data to the server the correct types need to be used
+# Directly sending HTML form data heavily simplifies the code as there is no need for converting the data at any point. 
 @router.post("/")
 async def post_issue(
     request: Request,
@@ -59,6 +61,7 @@ async def get_issues(db: Session = Depends(get_db), sessionID: str = Cookie(None
         )
 
 @router.patch("/{id}")
+# The "= None" ensures the user can update as many or as little values as they want without errors
 async def patch_issue(
     id: str,
     title: Annotated[Optional[str], Form()] = None,
@@ -108,6 +111,7 @@ async def delete(
         raise HTTPException(
             status_code=403, detail="User does not have necessary permission"
         )
+    # As only admins can delete, this check ensures the user is an admin
     if is_admin:
         if not check_if_issue_exists(db, id):
             raise HTTPException(status_code=404, detail="ID of issue not found")

@@ -44,6 +44,7 @@ async def register(
         )
 
     if (
+        # Checks if email or password is in the wrong format
         re.match(email_format, email) == None
         or re.match(password_format, password) == None
     ):
@@ -51,6 +52,7 @@ async def register(
             status_code=400, detail="Email or password entered is not valid format"
         )
     try:
+        # Hashes the password so it can be securely store in the database
         hashed_password = hashlib.new("SHA256")
         hashed_password.update(str(password).encode())
 
@@ -126,7 +128,7 @@ async def login(
             hashed_password = hashlib.new("SHA256")
             hashed_password.update(str(password).encode())
             create_user(db, email, hashed_password.hexdigest(), True)
-
+    # Checks if values have been entered
     if email == "" or password == "":
         raise HTTPException(
             status_code=400, detail="Email or password entered is not valid format"
@@ -139,7 +141,10 @@ async def login(
 
     if check_password(db, password, email) == False:
         raise HTTPException(status_code=401, detail="Incorrect email or password")
-
+    
+    # Creates a new session with the user_id of the person logging in, and then adds it to cookies
+    # Adding the sessionID to cookies automatically adds the sessionID as a header to every request until the cookie is removed
+    # Thus making it an effective way to easily identify a user securely
     response.set_cookie(
         key="sessionID", value=f"{create_session(db, get_id_by_email(db, email))}"
     )
@@ -155,6 +160,7 @@ async def get_id(
     sessionID: str = Cookie(None),
 ):
     try:
+        # This checks if the sessionID in the request and stored client side is valid
         if check_if_session_exists(db, sessionID):
             return get_id_by_email(db, email)
     except:
@@ -168,6 +174,7 @@ async def logout(
     db: Session = Depends(get_db),
 ):
     try:
+        # These two lines delete the session from the session table (server side) as well as deleting it from cookies (client side)
         delete_session(db, sessionID)
         response.delete_cookie("sessionID")
     except:

@@ -18,6 +18,7 @@ def home_page(
     req: Request, sessionID: Optional[str] = Cookie(None), db: Session = Depends(get_db)
 ):
     context = {"request": req}
+    # This check means a user must be logged in to view this page
     if check_if_session_exists(db, sessionID):
         return templates.TemplateResponse(name="index.html", request=req)
     else:
@@ -71,7 +72,7 @@ async def manage_page(
     context = {"request": req}
     try:
         is_admin = role_check(True, sessionID, db)
-
+        # This check insures only admin users are able to access this site
         if is_admin:
             issues = get_all_issues(db)
             context = {"request": req, "issues": issues}
