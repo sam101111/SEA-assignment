@@ -416,3 +416,76 @@ def test_delete_issue_as_user(test_db, login_user):
     issue_id = create_issue.json()
     updated_issue = client.delete(f"/api/issues/{issue_id}")
     assert updated_issue.status_code == 403
+
+
+def test_get_all_issues_as_user(test_db, login_user):
+    get_id = client.post("/api/auth/getid", data={"email": "test2@test.com"})
+    assert get_id.status_code == 200
+
+    created_issue_1 = client.post(
+        "/api/issues",
+        data={
+            "title": "test issue",
+            "type": "Bug",
+            "description": "really good test issue",
+        },
+    )
+    assert created_issue_1.status_code == 200
+    created_issue_2 = client.post(
+        "/api/issues",
+        data={
+            "title": "test2 issue",
+            "type": "Bug",
+            "description": "really really good test issue",
+        },
+    )
+    assert created_issue_2.status_code == 200
+    expected = [
+        {"title": "test issue", "type": "Bug", "description": "really good test issue", "user_id": f"{get_id.json()}", "id": f"{created_issue_1.json()}"},
+        {
+            "title": "test2 issue",
+            "type": "Bug",
+            "description": "really really good test issue",
+            "user_id": f"{get_id.json()}",
+            "id": f"{created_issue_2.json()}",
+        },
+    ]
+    
+    get_issues = client.get("/api/issues")
+    assert get_issues.json() == expected
+    
+def test_get_all_issues_as_admin(test_db, login_admin):
+    get_id = client.post("/api/auth/getid", data={"email": "admintest@test.com"})
+    assert get_id.status_code == 200
+
+    created_issue_1 = client.post(
+        "/api/issues",
+        data={
+            "title": "test issue",
+            "type": "Bug",
+            "description": "really good test issue",
+        },
+    )
+    assert created_issue_1.status_code == 200
+    created_issue_2 = client.post(
+        "/api/issues",
+        data={
+            "title": "test2 issue",
+            "type": "Bug",
+            "description": "really really good test issue",
+        },
+    )
+    assert created_issue_2.status_code == 200
+    expected = [
+        {"title": "test issue", "type": "Bug", "description": "really good test issue", "user_id": f"{get_id.json()}", "id": f"{created_issue_1.json()}"},
+        {
+            "title": "test2 issue",
+            "type": "Bug",
+            "description": "really really good test issue",
+            "user_id": f"{get_id.json()}",
+            "id": f"{created_issue_2.json()}",
+        },
+    ]
+    
+    get_issues = client.get("/api/issues")
+    assert get_issues.json() == expected

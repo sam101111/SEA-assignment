@@ -19,3 +19,7 @@ def delete_session(db: Session, session_id: str):
     toDelete = db.query(SessionDb).filter(SessionDb.session_id == session_id).first()
     db.delete(toDelete)
     db.commit()
+
+
+def check_if_session_exists(db: Session, id: str):
+    return db.query(exists().where(SessionDb.session_id == id)).scalar()

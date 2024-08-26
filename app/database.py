@@ -12,6 +12,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
+# A function to gain access to the database instance
 def get_db():
     db = SessionLocal()
     try:

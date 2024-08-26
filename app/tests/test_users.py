@@ -23,6 +23,7 @@ def override_get_db():
         db.close()
 
 
+# Creating testing database
 @pytest.fixture()
 def test_db():
     Base.metadata.create_all(bind=engine)
@@ -62,8 +63,10 @@ def login_admin():
     assert response.status_code == 200
 
 
+# Overriding the get_db to goto the testing db rather then the main db
 app.dependency_overrides[get_db] = override_get_db
 
+# Creating a testing instance
 client = TestClient(app)
 
 
