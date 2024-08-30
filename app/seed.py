@@ -28,39 +28,45 @@ def seed(db: Session):
     issues = [
         IssueDb(
             title="Server keeps crashing",
-            description="Cant seem to make a stable connection",
+            description="No idea why",
             type="Bug",
             user_id=user_1.id,
+            is_resolved=False
+            
         ),
         IssueDb(
-            title="can you create me an account",
-            description="Requesting for a new account",
-            type="Service request",
+            title="Server got struck my lighting",
+            description="server is very much fried",
+            type="Incident report",
             user_id=user_2.id,
         ),
         IssueDb(
-            title="Server data has been corrupted",
-            description="data been corrupted",
+            title="Split my starbucks on the server",
+            description="my coffee is everywhere",
             type="Incident report",
             user_id=user_3.id,
+            is_resolved=True
         ),
         IssueDb(
             title="can you create me an account",
             description="Requesting for a new account",
             type="Service request",
             user_id=user_4.id,
+            is_resolved=False
         ),
         IssueDb(
             title="can you create me an account",
             description="Requesting for a new account",
             type="Service request",
             user_id=user_5.id,
+            is_resolved=False
         ),
         IssueDb(
             title="can you create me an account",
             description="Requesting for a new account",
             type="Service request",
             user_id=user_6.id,
+            is_resolved=False
         ),
     ]
     db.add_all(issues)

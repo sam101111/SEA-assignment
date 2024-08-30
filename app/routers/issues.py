@@ -129,3 +129,25 @@ async def delete(
         raise HTTPException(
             status_code=403, detail="User does not have necessary permission"
         )
+ 
+# Used to resolve an issue if a solution is found       
+@router.patch("/resolve/{id}")
+async def resolve(
+    id: str, db: Session = Depends(get_db), sessionID: str = Cookie(None)
+):
+    try:
+        is_admin = role_check(True, sessionID, db)
+    except:
+        raise HTTPException(
+            status_code=403, detail="User does not have necessary permission"
+        )
+    
+    if is_admin:
+        if not check_if_issue_exists(db, id):
+            raise HTTPException(status_code=404, detail="ID of issue not found")
+        resolve_issue(db,id)
+    else:
+        raise HTTPException(
+            status_code=403, detail="User does not have necessary permission"
+        )
+
