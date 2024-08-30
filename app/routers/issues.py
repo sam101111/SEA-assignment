@@ -52,10 +52,19 @@ async def get_by_user(
 @router.get("/")
 async def get_issues(db: Session = Depends(get_db), sessionID: str = Cookie(None)) -> list[GetIssuesResponse]:
     try:
-        if not check_if_session_exists(db, sessionID):
-            raise HTTPException(status_code=404, detail="ID of issue not found")
-        return get_all_issues(db)
-    except:
+        is_admin = role_check(True, sessionID, db)
+        print(is_admin)
+        if is_admin:
+            if not check_if_user_exists(db, get_user_by_session(db, sessionID)):
+                raise HTTPException(status_code=404, detail="ID of user not found")
+            return get_all_issues(db)
+            
+        else:
+            raise HTTPException(
+                status_code=403, detail="User does not have necessary permission"
+            )
+    except Exception as err:
+        print(err)
         raise HTTPException(
             status_code=403, detail="User does not have necessary permission"
         )
