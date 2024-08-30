@@ -32,6 +32,7 @@
     {% set navElements = [{"title": "Create ticket", "url": "/"}, {"title": "Your issues", "url": "/issues"},
     {"title": "Manage issues", "url": "/manage"}, {"title": "User Directory", "url": "/directory"} , {"title": "Register", "url": "/register"} ,{"title":
     sessionStatus, "url": sessionStatusUrl }]%}
+    <div class="flex flex-col h-screen w-screen">
 
     <header class="bg-[#7079D9] py-4">
         <nav class="flex justify-between 
@@ -83,11 +84,14 @@
     </script>
 
 
-    <div class="flex justify-center items-center h-screen w-screen">
+    <div class="flex-1 flex justify-center items-center ">
+        
         {% block content%}
 
         {% endblock %}
+
     </div>
+</div>
 
     <div id="logoutToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
