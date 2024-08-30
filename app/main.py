@@ -26,3 +26,9 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(issues_router, prefix="/api/issues", tags=["issues"])
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(pages_router, tags=["pages"])
+
+# health check route
+@app.head("/health")
+@app.get("/health")
+async def health_check():
+    return "ok"
