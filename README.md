@@ -46,6 +46,16 @@ next run the following to run the unit tests and End-2-End tests:
 pytest -vv
 ```
 
+To run just the unit tests you can run:
+```bash
+pytest -k "unit"
+```
+
+To run just the e2e tests you can run:
+```bash
+pytest -k "e2e"
+```
+
 ## Why I chose FastAPI
 
 ## entity relationship diagram

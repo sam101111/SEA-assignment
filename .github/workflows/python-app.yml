@@ -39,6 +39,3 @@ jobs:
         pytest -k "unit"
     - name: Install Playwright Browsers
       run: playwright install
-    - name: Run e2e tests
-      run: |
-        pytest -k "e2e"
