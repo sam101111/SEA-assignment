@@ -5,7 +5,7 @@ import pytest
 
 @pytest.fixture()
 def e2e_admin_login(playwright: Playwright):
-    browser = playwright.chromium.launch(headless=False)
+    browser = playwright.chromium.launch(headless=True)
     context = browser.new_context()
     page = context.new_page()
     page.goto("http://127.0.0.1:8000/")

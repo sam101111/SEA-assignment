@@ -30,11 +30,20 @@ uvicorn app.main:app --reload
 The application is deployed on: https://sea-assignment-help-desk.onrender.com/register
 
 ## testing
+Within this project both End-2-End and unit tests have been created.
 
-to run the unit tests run the following command in the root of the project:
+> [!CAUTION]
+> To run the playwright command you must first run ```bash pip install -r requirements.txt``` in the root of the project
+
+to run the playwright end-2-end tests a you first need to run the following the in the root of the project:
 
 ```bash
-pytest
+playwright install
+```
+next run, this will run the unit tests and End-2-End tests:
+
+```bash
+pytest -vv
 ```
 
 ## Why I chose FastAPI
