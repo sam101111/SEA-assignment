@@ -40,7 +40,7 @@ to run the playwright end-2-end tests a you first need to run the following the 
 ```bash
 playwright install
 ```
-next run, this will run the unit tests and End-2-End tests:
+next run the following to run the unit tests and End-2-End tests:
 
 ```bash
 pytest -vv
