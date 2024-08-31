@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, String, Enum as dbEnum
+from sqlalchemy import Column, ForeignKey, String, Enum as dbEnum, Boolean
 from sqlalchemy.orm import relationship
 from app.schemas.issue import IssueType
 from app.database import Base
@@ -13,5 +13,6 @@ class Issue(Base):
     description = Column(String, index=True, nullable=False)
     type = Column(dbEnum(IssueType), index=True, nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    is_resolved = Column(Boolean, default=False, nullable=False)
 
     user = relationship("User", back_populates="issues")

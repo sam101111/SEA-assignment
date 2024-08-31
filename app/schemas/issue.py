@@ -18,10 +18,12 @@ class IssueBase(BaseModel):
 class GetIssuesByUserResponse(IssueBase):
     id: str
     user_id: str
+    is_resolved: bool
 
 class GetIssuesResponse(IssueBase):
     id: str
     user_id: str
+    is_resolved: bool
 
 class CreateIssue(IssueBase):
     user_id: str

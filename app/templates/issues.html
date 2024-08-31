@@ -130,6 +130,8 @@
     })
   }
 
+  
+
   const promote = (id) => {
     const alert = document.getElementById("updateIssueAlert");
     fetch(`/api/auth/promote/${id}`, {
@@ -199,7 +201,7 @@
 
 
 
-  const onResolve = (id) => {
+  const onDelete = (id) => {
     const alert = document.getElementById("updateIssueAlert");
     fetch(`/api/issues/${id}`, {
       method: "DELETE"
@@ -228,6 +230,38 @@
         
     })
   }
+
+  const onResolve = (id) => {
+    const alert = document.getElementById("updateIssueAlert");
+    fetch(`/api/issues/resolve/${id}`, {
+      method: "PATCH"
+    })
+    .then(res => {
+      console.log(res)
+      switch (res.status) {
+        case 200:
+          alert.setAttribute("class", "alert alert-success")
+          alert.textContent="Successfully resolved issue, refresh to see changes 😊"
+          break;
+        case 404:
+          alert.setAttribute("class", "alert alert-danger")
+          alert.textContent="Issue already resolved by another admin 😅"
+          break; 
+        case 403:
+          alert.setAttribute("class", "alert alert-danger")
+          alert.textContent="User does not have necessary permission"
+          break; 
+
+      }
+
+
+    }).catch(err => {
+      console.log(err)
+        
+    })
+  }
+
+  
   const onTypeFilter = () => {
     document.getElementById("emptyText").classList.add("hidden")
     var filterValue = event.target.value;

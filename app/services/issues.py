@@ -46,3 +46,7 @@ def check_if_issue_exists(db: Session, id: str):
 def get_user_by_issue_id(db: Session, issueId: str):
     issue = db.query(IssueDb).filter(IssueDb.id == issueId).first()
     return issue.user_id
+
+def resolve_issue(db: Session, id: str):
+    db.query(IssueDb).filter(IssueDb.id == id).update({"is_resolved": True})
+    db.commit()
