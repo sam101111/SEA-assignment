@@ -103,6 +103,76 @@
 </div>
 
 <script>
+  const getIssues =  () => {
+    fetch(`/api/issues`, {
+      method: "GET",
+    })
+
+    .then(res => {
+      if (res.ok){
+        return res.json()
+        .then(data => {
+          
+          console.log(data)
+          refreshIssues(data)
+        })
+      }
+  
+
+    
+    }) .catch(err => {
+      console.log(err)
+    })
+
+  }
+
+  const refreshIssues = (issues) => {
+    const container = document.getElementById('issueContainer');
+
+    container.innerHTML = '';
+  
+
+    issues.forEach(issue => {
+      switch (issue.type) {
+        case "Account and access":
+          tag = "btn btn-warning"
+          break;
+        case "Service request":
+          tag = "btn btn-info"
+          break;
+        default:
+          tag = "btn btn-danger"
+          break;
+
+
+
+      }
+      const element = 
+      `
+      <div name="${issue.title}" class="issue ${issue.type} ${issue.title} ${issue.id} mt-2">
+      <div class="card gap-4">
+    <h5 class="card-header"> ${issue.title}
+      ${issue.is_resolved == true ? '<span class="badge text-bg-success float-right">Resolved</span>' : "" }
+    </h5>
+    <div class="card-body">
+      <h5 class="card-title"><span class="badge ${tag}">${issue.type}</span></h5>
+      <p class="card-text mb-2">${issue.description}</p>
+      <button  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal" name="${issue.id}" onclick="onModalOpen(name)">Update</button>
+      <button name="${issue.id}" onclick="onResolve(name)" class="btn btn-success">Resolve</button>
+      <button name="${issue.id}" onclick="onDelete(name)" class="btn btn-danger">Delete</button>
+      
+
+      <p class="float-right">Opened by: ${issue.user.email}</p>
+    </div>
+  
+</div>
+</div>
+</div>
+`
+      container.innerHTML += element;
+    })
+
+  }
   const deleteUser = (id) => {
     const alert = document.getElementById("updateIssueAlert");
     fetch(`/api/auth/${id}`, {
@@ -113,6 +183,7 @@
         case 200:
           alert.setAttribute("class", "alert alert-success")
           alert.textContent="Successfully deleted user, refresh to see changes 😊"
+          window.location.reload();
           break;
         case 404:
           alert.setAttribute("class", "alert alert-danger")
@@ -142,6 +213,7 @@
         case 200:
           alert.setAttribute("class", "alert alert-success")
           alert.textContent="Successfully promoted user, refresh to see changes 😊"
+          window.location.reload();
           break;
         case 404:
           alert.setAttribute("class", "alert alert-danger")
@@ -185,6 +257,7 @@
         case 200:
           alert.setAttribute("class", "alert alert-success")
           alert.textContent="Successfully updated issue, refresh to see changes 😊"
+          window.location.reload();
           break;
         case 404:
           alert.setAttribute("class", "alert alert-danger")
@@ -207,11 +280,13 @@
       method: "DELETE"
     })
     .then(res => {
-      console.log(res)
       switch (res.status) {
         case 200:
+          getIssues();
+          console.log(getIssues())
           alert.setAttribute("class", "alert alert-success")
           alert.textContent="Successfully deleted issue, refresh to see changes 😊"
+          
           break;
         case 404:
           alert.setAttribute("class", "alert alert-danger")
@@ -242,6 +317,7 @@
         case 200:
           alert.setAttribute("class", "alert alert-success")
           alert.textContent="Successfully resolved issue, refresh to see changes 😊"
+          window.location.reload();
           break;
         case 404:
           alert.setAttribute("class", "alert alert-danger")

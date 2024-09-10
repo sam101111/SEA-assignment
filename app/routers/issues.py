@@ -9,6 +9,7 @@ from app.services.sessions import check_if_session_exists, get_user_by_session
 from app.database import get_db
 
 
+
 router = APIRouter()
 
 

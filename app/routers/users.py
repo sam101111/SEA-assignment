@@ -78,7 +78,7 @@ async def promote(
                 raise HTTPException(status_code=404, detail="ID of user not found")
             if get_role_by_id(db, id) == True:
                 raise HTTPException(
-                    status_code=403, detail="User does not have necessary permission"
+                    status_code=403, detail="User is already an admin"
                 )
 
             promote_user(db, id)
