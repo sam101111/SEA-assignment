@@ -27,6 +27,7 @@ class GetIssuesByUserResponse(IssueBase):
     id: str
     user_id: str
     is_resolved: bool
+    user: GetAllUsersResponse
     class Config:
         orm_mode = True
         from_attributes=True

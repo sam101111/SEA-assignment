@@ -10,7 +10,7 @@ def create_session(db: Session, user_id: str):
     return session.session_id
 
 
-def get_user_by_session(db: Session, session_id: str):
+def get_user_by_session(db: Session, session_id: str) -> str:
     session = db.query(SessionDb).filter(SessionDb.session_id == session_id).first()
     return session.user_id
 

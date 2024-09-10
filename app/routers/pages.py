@@ -31,15 +31,20 @@ def issues_page(
 ):
     context = {"request": req}
     try:
+
         if check_if_session_exists(db, sessionID):
             issues = get_issues_by_user(db, get_user_by_session(db, sessionID))
-            context = {"request": req, "issues": issues}
+            user_id = get_user_by_session(db,sessionID)
+            context = {"request": req, "issues": issues, "user_id": user_id}
+            print(context)
             return templates.TemplateResponse("issues.html", context)
         else:
+            
             return templates.TemplateResponse("unauthorised.html", context)
     except:
-        
         return templates.TemplateResponse("unauthorised.html", context)
+
+
 
 
 @router.get("/directory", response_class=HTMLResponse)
