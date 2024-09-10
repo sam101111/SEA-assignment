@@ -11,9 +11,10 @@ from app.database import get_db
 
 router = APIRouter()
 
-# Within the codebase Form() is used extensively, 
+
+# Within the codebase Form() is used extensively,
 # this is because to directly send HTML form data to the server the correct types need to be used
-# Directly sending HTML form data heavily simplifies the code as there is no need for converting the data at any point. 
+# Directly sending HTML form data heavily simplifies the code as there is no need for converting the data at any point.
 @router.post("/")
 async def post_issue(
     request: Request,
@@ -50,7 +51,9 @@ async def get_by_user(
 
 
 @router.get("/")
-async def get_issues(db: Session = Depends(get_db), sessionID: str = Cookie(None)) -> list[GetIssuesResponse]:
+async def get_issues(
+    db: Session = Depends(get_db), sessionID: str = Cookie(None)
+) -> list[GetIssuesResponse]:
     try:
         is_admin = role_check(True, sessionID, db)
         print(is_admin)
@@ -58,7 +61,7 @@ async def get_issues(db: Session = Depends(get_db), sessionID: str = Cookie(None
             if not check_if_user_exists(db, get_user_by_session(db, sessionID)):
                 raise HTTPException(status_code=404, detail="ID of user not found")
             return get_all_issues(db)
-            
+
         else:
             raise HTTPException(
                 status_code=403, detail="User does not have necessary permission"
@@ -68,6 +71,7 @@ async def get_issues(db: Session = Depends(get_db), sessionID: str = Cookie(None
         raise HTTPException(
             status_code=403, detail="User does not have necessary permission"
         )
+
 
 @router.patch("/{id}")
 # The "= None" ensures the user can update as many or as little values as they want without errors
@@ -89,7 +93,7 @@ async def patch_issue(
         raise HTTPException(
             status_code=403, detail="User does not have necessary permission"
         )
-        
+
     # Checks if the Issue that is being updated is owned by the user that made the request or if the user is an admin, if not raise 403
     if userIssueId == userId or userRole == True:
         issue = {"title": title, "type": type, "description": description}
@@ -111,9 +115,7 @@ async def patch_issue(
 
 
 @router.delete("/{id}")
-async def delete(
-    id: str, db: Session = Depends(get_db), sessionID: str = Cookie(None)
-):
+async def delete(id: str, db: Session = Depends(get_db), sessionID: str = Cookie(None)):
     try:
         is_admin = role_check(True, sessionID, db)
     except:
@@ -129,8 +131,9 @@ async def delete(
         raise HTTPException(
             status_code=403, detail="User does not have necessary permission"
         )
- 
-# Used to resolve an issue if a solution is found       
+
+
+# Used to resolve an issue if a solution is found
 @router.patch("/resolve/{id}")
 async def resolve(
     id: str, db: Session = Depends(get_db), sessionID: str = Cookie(None)
@@ -141,13 +144,12 @@ async def resolve(
         raise HTTPException(
             status_code=403, detail="User does not have necessary permission"
         )
-    
+
     if is_admin:
         if not check_if_issue_exists(db, id):
             raise HTTPException(status_code=404, detail="ID of issue not found")
-        resolve_issue(db,id)
+        resolve_issue(db, id)
     else:
         raise HTTPException(
             status_code=403, detail="User does not have necessary permission"
         )
-

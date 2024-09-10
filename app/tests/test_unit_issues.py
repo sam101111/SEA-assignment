@@ -439,7 +439,7 @@ def test_get_all_issues_as_user(test_db, login_user):
             "title": "test2 issue",
             "type": "Bug",
             "description": "really really good test issue",
-            "is_resolved": False
+            "is_resolved": False,
         },
     )
     assert created_issue_2.status_code == 200
@@ -447,7 +447,8 @@ def test_get_all_issues_as_user(test_db, login_user):
     assert get_issues.status_code == 403
     response_data = get_issues.json()
     assert response_data == {"detail": "User does not have necessary permission"}
-    
+
+
 def test_get_all_issues_as_admin(test_db, login_admin):
     get_id = client.post("/api/auth/getid", data={"email": "admintest@test.com"})
     assert get_id.status_code == 200
@@ -471,17 +472,24 @@ def test_get_all_issues_as_admin(test_db, login_admin):
     )
     assert created_issue_2.status_code == 200
     expected = [
-        {"title": "test issue", "type": "Bug", "description": "really good test issue", "user_id": f"{get_id.json()}", "id": f"{created_issue_1.json()}", "is_resolved": False},
+        {
+            "title": "test issue",
+            "type": "Bug",
+            "description": "really good test issue",
+            "user_id": f"{get_id.json()}",
+            "id": f"{created_issue_1.json()}",
+            "is_resolved": False,
+        },
         {
             "title": "test2 issue",
             "type": "Bug",
             "description": "really really good test issue",
             "user_id": f"{get_id.json()}",
             "id": f"{created_issue_2.json()}",
-            "is_resolved": False
+            "is_resolved": False,
         },
     ]
-    
+
     get_issues = client.get("/api/issues")
     assert get_issues.status_code == 200
     assert get_issues.json() == expected

@@ -20,12 +20,17 @@ async def lifespan(app: FastAPI):
 
 # Creates the database tables and fastAPI instance
 Base.metadata.create_all(bind=engine)
-app = FastAPI(lifespan=lifespan, title="Help desk API", description="Having problems ? try submitting a ticket 😊")
+app = FastAPI(
+    lifespan=lifespan,
+    title="Help desk API",
+    description="Having problems ? try submitting a ticket 😊",
+)
 
 # Adds the routers to the fastAPI instance
 app.include_router(issues_router, prefix="/api/issues", tags=["issues"])
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(pages_router, tags=["pages"])
+
 
 # health check route
 @app.head("/health")

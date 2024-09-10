@@ -14,7 +14,9 @@ router = APIRouter()
 
 
 @router.get("/")
-async def get_all_users(db: Session = Depends(get_db), sessionID: str = Cookie(None)) -> list[GetAllUsersResponse]:
+async def get_all_users(
+    db: Session = Depends(get_db), sessionID: str = Cookie(None)
+) -> list[GetAllUsersResponse]:
     try:
         print(check_if_session_exists(db, sessionID))
         if check_if_session_exists(db, sessionID):
@@ -141,7 +143,7 @@ async def login(
 
     if check_password(db, password, email) == False:
         raise HTTPException(status_code=401, detail="Incorrect email or password")
-    
+
     # Creates a new session with the user_id of the person logging in, and then adds it to cookies
     # Adding the sessionID to cookies automatically adds the sessionID as a header to every request until the cookie is removed
     # Thus making it an effective way to easily identify a user securely
