@@ -37,5 +37,3 @@ jobs:
     - name: Run unit tests
       run: |
         pytest -k "unit"
-    - name: Install Playwright Browsers
-      run: playwright install
