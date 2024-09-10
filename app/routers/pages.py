@@ -29,6 +29,7 @@ def home_page(
 def issues_page(
     req: Request, db: Session = Depends(get_db), sessionID: Optional[str] = Cookie(None)
 ):
+    context = {"request": req}
     try:
         if check_if_session_exists(db, sessionID):
             issues = get_issues_by_user(db, get_user_by_session(db, sessionID))
@@ -37,7 +38,7 @@ def issues_page(
         else:
             return templates.TemplateResponse("unauthorised.html", context)
     except:
-        context = {"request": req}
+        
         return templates.TemplateResponse("unauthorised.html", context)
 
 
@@ -45,17 +46,16 @@ def issues_page(
 def directory_page(
     req: Request, db: Session = Depends(get_db), sessionID: Optional[str] = Cookie(None)
 ):
-    try:
+    context = {"request": req}
+    try:   
         if check_if_session_exists(db, sessionID):
             users = get_users(db)
-            userRole = get_role_by_id(db, get_user_by_session(db, sessionID))
-            context = {"request": req, "users": users, "role": userRole}
+            user_role = get_role_by_id(db, get_user_by_session(db, sessionID))
+            context = {"request": req, "users": users, "role": user_role}
             return templates.TemplateResponse("userDirectory.html", context)
         else:
             return templates.TemplateResponse("unauthorised.html", context)
-
     except:
-        context = {"request": req}
         return templates.TemplateResponse("unauthorised.html", context)
 
 

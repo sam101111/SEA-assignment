@@ -9,7 +9,7 @@ def e2e_admin_login(playwright: Playwright):
     context = browser.new_context()
     page = context.new_page()
     page.goto("http://127.0.0.1:8000/")
-        
+
     page.get_by_role("link", name="Login").click()
     page.get_by_placeholder("Enter email").click()
     page.get_by_placeholder("Enter email").fill("admintest@test.com")
@@ -17,12 +17,13 @@ def e2e_admin_login(playwright: Playwright):
     page.get_by_placeholder("Enter password").fill("test1A$c34")
     page.get_by_placeholder("Enter password").press("Enter")
     page.get_by_text("Successfully logged in").click()
-        
+
     expect(page.get_by_text("Successfully logged in")).to_be_visible()
-    
+
     yield page
-        
+
     browser.close()
+
 
 def test_e2e_create_issue(e2e_admin_login: Playwright):
     page = e2e_admin_login
@@ -35,7 +36,3 @@ def test_e2e_create_issue(e2e_admin_login: Playwright):
     page.get_by_placeholder("Add more detail about the").fill("e2e create issue test")
     page.get_by_role("button", name="Submit").click()
     expect(page.get_by_text("Successfully created issue")).to_be_visible()
-    
-
-
-
