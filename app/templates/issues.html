@@ -9,12 +9,28 @@
   <div class="alert alert-primary hidden" role="alert" id="updateIssueAlert">
     text here lol
   </div>
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+
+      <div id="tostResponse" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto" id="toastTitle">Bootstrap</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastBody">
+          Hello, world! This is a toast message.
+        </div>
+      </div>
+    
+    </div>
+
+
   {% block filters %}
     <div>
 
       {% block title %}
         <h1 class="text-3xl">Your tickets</h1>
       {% endblock %}
+
         
         <div class="flex flex-row w-6/12 gap-2">
             
@@ -209,7 +225,7 @@
 
     issues.forEach(issue => {
       switch (issue.type) {
-        case "Account and access":
+        case "Account and Access":
           tag = "btn btn-warning"
           break;
         case "Service request":
@@ -233,12 +249,12 @@
       <h5 class="card-title"><span class="badge ${tag}">${issue.type}</span></h5>
       <p class="card-text mb-2">${issue.description}</p>
       <button  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal" name="${issue.id}" onclick="onModalOpen(name)">Update</button>
-      ${page == "manage" && isAdmin == true ?
+      ${page == "manage" && isAdmin == true && issue.is_resolved == false ?
       `<button name="${issue.id}" onclick="onResolve(name)" class="btn btn-success">Resolve</button>`
       :
       ''
     }
-    ${page == "manage" && isAdmin == true && issue.is_resolved == false?
+    ${page == "manage" && isAdmin == true ?
       `<button name="${issue.id}" onclick="onDelete(name)" class="btn btn-danger">Delete</button>`
       :
       ''
@@ -325,8 +341,12 @@
     
     event.preventDefault();
     const alert = document.getElementById("updateIssueAlert");
-    const updateForm = document.getElementById("updateForm")
-    const id = updateForm.getAttribute("issue-id")
+    var toast = document.getElementById("tostResponse");
+    var toastTitle = document.getElementById("toastTitle");
+    var toastBody = document.getElementById("toastBody");
+    var newToast = new bootstrap.Toast(toast);
+    const updateForm = document.getElementById("updateForm");
+    const id = updateForm.getAttribute("issue-id");
     const formData = new FormData(event.target);
     console.log(formData)
 
@@ -339,8 +359,9 @@
       switch (res.status) {
         case 200:
           {page == "manage" ? getIssues() : getIssuesByUser()}
-          alert.setAttribute("class", "alert alert-success")
-          alert.textContent="Successfully updated issue, refresh to see changes 😊"
+          toastTitle.textContent = "Success"
+          toastBody.textContent = "Successfully updated issue, refresh to see changes 😊"
+          newToast.show()
           break;
         case 404:
           alert.setAttribute("class", "alert alert-danger")
