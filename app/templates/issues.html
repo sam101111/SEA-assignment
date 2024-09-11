@@ -104,6 +104,64 @@
 
 <script>
   const userId = JSON.parse('{{ user_id | tojson | safe }}');
+  const isAdmin = JSON.parse('{{ is_admin | tojson | safe }}');
+  const page = JSON.parse('{{ page | tojson | safe }}');
+
+  const getUsers = () => {
+    fetch(`/api/auth`, {
+      method: "GET",
+    })
+
+    .then(res => {
+      if (res.ok){
+        return res.json()
+        .then(data => {
+          
+          console.log(data)
+          refreshUsers(data)
+        })
+      }
+    }) .catch(err => {
+      console.log(err)
+    })
+
+  }
+  const refreshUsers = (users) => {
+    const container = document.getElementById('issueContainer');
+
+    container.innerHTML = '';
+  
+
+    users.forEach(user => {
+
+      const element = 
+      `
+      <div class="mt-2">
+<div class="card">
+    <h5 class="card-header"> ${user.email}</h5>
+    <div class="card-body">
+      <h5 class="card-title">
+        ${user.isAdmin == true ? '<span class="badge text-bg-info">Admin</span>' : '<span class="badge text-bg-secondary ">User</span>' }
+        
+  </h5>
+      
+    
+      ${isAdmin == true ? `<button  class="btn btn-danger"  name="${user.id}" onclick="deleteUser(name)">Delete</button>` : ''}
+      ${user.isAdmin == false && isAdmin == true ? `<button  class="btn btn-primary"  name="${user.id}" onclick="promote(name)">Promote to Admin</button>` : ''}
+      
+
+
+    </div>
+  
+</div>
+</div>
+</div>
+`
+      container.innerHTML += element;
+    })
+
+  }
+
   const getIssues =  () => {
     fetch(`/api/issues`, {
       method: "GET",
@@ -175,8 +233,16 @@
       <h5 class="card-title"><span class="badge ${tag}">${issue.type}</span></h5>
       <p class="card-text mb-2">${issue.description}</p>
       <button  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal" name="${issue.id}" onclick="onModalOpen(name)">Update</button>
-      <button name="${issue.id}" onclick="onResolve(name)" class="btn btn-success">Resolve</button>
-      <button name="${issue.id}" onclick="onDelete(name)" class="btn btn-danger">Delete</button>
+      ${page == "manage" && isAdmin == true ?
+      `<button name="${issue.id}" onclick="onResolve(name)" class="btn btn-success">Resolve</button>`
+      :
+      ''
+    }
+    ${page == "manage" && isAdmin == true && issue.is_resolved == false?
+      `<button name="${issue.id}" onclick="onDelete(name)" class="btn btn-danger">Delete</button>`
+      :
+      ''
+    }
       
 
       <p class="float-right">Opened by: ${issue.user.email}</p>
@@ -198,9 +264,9 @@
     .then(res => {
       switch (res.status) {
         case 200:
+          getUsers()
           alert.setAttribute("class", "alert alert-success")
           alert.textContent="Successfully deleted user, refresh to see changes 😊"
-          window.location.reload();
           break;
         case 404:
           alert.setAttribute("class", "alert alert-danger")
@@ -228,9 +294,9 @@
     .then(res => {
       switch (res.status) {
         case 200:
+          getUsers()
           alert.setAttribute("class", "alert alert-success")
           alert.textContent="Successfully promoted user, refresh to see changes 😊"
-          window.location.reload();
           break;
         case 404:
           alert.setAttribute("class", "alert alert-danger")
@@ -272,7 +338,7 @@
       console.log(res)
       switch (res.status) {
         case 200:
-          getIssuesByUser()
+          {page == "manage" ? getIssues() : getIssuesByUser()}
           alert.setAttribute("class", "alert alert-success")
           alert.textContent="Successfully updated issue, refresh to see changes 😊"
           break;
@@ -299,8 +365,7 @@
     .then(res => {
       switch (res.status) {
         case 200:
-          getIssues();
-          console.log(getIssues())
+          {page == "manage" ? getIssues() : getIssuesByUser()}
           alert.setAttribute("class", "alert alert-success")
           alert.textContent="Successfully deleted issue, refresh to see changes 😊"
           
@@ -332,9 +397,9 @@
       console.log(res)
       switch (res.status) {
         case 200:
+          {page == "manage" ? getIssues() : getIssuesByUser()}
           alert.setAttribute("class", "alert alert-success")
           alert.textContent="Successfully resolved issue, refresh to see changes 😊"
-          window.location.reload();
           break;
         case 404:
           alert.setAttribute("class", "alert alert-danger")

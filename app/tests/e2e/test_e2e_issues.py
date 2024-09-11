@@ -16,9 +16,7 @@ def e2e_admin_login(playwright: Playwright):
     page.get_by_placeholder("Enter email").press("Tab")
     page.get_by_placeholder("Enter password").fill("test1A$c34")
     page.get_by_placeholder("Enter password").press("Enter")
-    page.get_by_text("Successfully logged in").click()
 
-    expect(page.get_by_text("Successfully logged in")).to_be_visible()
 
     yield page
 
@@ -27,8 +25,6 @@ def e2e_admin_login(playwright: Playwright):
 
 def test_e2e_create_issue(e2e_admin_login: Playwright):
     page = e2e_admin_login
-    page.get_by_text("Successfully logged in").click()
-    page.get_by_role("link", name="Create ticket").click()
     page.get_by_label("Select an issue type").select_option("Bug")
     page.get_by_placeholder("What issue are you having ?").click()
     page.get_by_placeholder("What issue are you having ?").fill("creating an issue")

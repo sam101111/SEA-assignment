@@ -35,7 +35,8 @@ def issues_page(
         if check_if_session_exists(db, sessionID):
             issues = get_issues_by_user(db, get_user_by_session(db, sessionID))
             user_id = get_user_by_session(db,sessionID)
-            context = {"request": req, "issues": issues, "user_id": user_id}
+            is_admin = role_check(True,sessionID, db)
+            context = {"request": req, "issues": issues, "user_id": user_id, "page": "issues", "is_admin": is_admin}
             print(context)
             return templates.TemplateResponse("issues.html", context)
         else:
@@ -55,8 +56,10 @@ def directory_page(
     try:   
         if check_if_session_exists(db, sessionID):
             users = get_users(db)
+            is_admin = role_check(True, sessionID, db)
+            user_id = get_user_by_session(db,sessionID)
             user_role = get_role_by_id(db, get_user_by_session(db, sessionID))
-            context = {"request": req, "users": users, "role": user_role}
+            context = {"request": req, "users": users, "role": user_role, "is_admin": is_admin, "page": "directory", "user_id":  user_id}
             return templates.TemplateResponse("userDirectory.html", context)
         else:
             return templates.TemplateResponse("unauthorised.html", context)
@@ -80,7 +83,8 @@ async def manage_page(
         # This check insures only admin users are able to access this site
         if is_admin:
             issues = get_all_issues(db)
-            context = {"request": req, "issues": issues}
+            user_id = get_user_by_session(db,sessionID)
+            context = {"request": req, "issues": issues, "is_admin": is_admin, "page": "manage", "user_id":  user_id}
 
             return templates.TemplateResponse("manage.html", context)
         else:
