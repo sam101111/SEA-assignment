@@ -24,6 +24,18 @@
     <nav class="flex justify-between 
                 items-center w-[92%]  mx-auto text-white ">
                 <h1 class="text-3xl mx-10 text-white">Help Desk Centre 🆘</h1>
+                <ul class="flex md:flex-row flex-col 
+                md:items-center md:gap-[4vw] gap-8">
+                <iframe id="preventRedirect2" class="hidden"></iframe>
+
+
+
+
+                <li>
+                 <a class="p-2 m-2 text-lg  cursor-pointer duration-300 hover:text-[#D3D3D3] " href="/register">Register</a>
+             </li>
+
+     </ul>
             
             </nav>
         </header>
@@ -73,6 +85,10 @@
                     case 401:
                         alert.setAttribute("class", "alert alert-danger")
                         alert.textContent="Incorrect email or password"
+                        break;
+                    case 400:
+                        alert.setAttribute("class", "alert alert-danger")
+                        alert.textContent="Email is not in correct format"
                         break;
                 }
             }
