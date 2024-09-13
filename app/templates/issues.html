@@ -56,8 +56,8 @@
       </div>
     </div>
     {% endblock %}
-<div id="issueContainer">
-  <h1 id="emptyText" class="text-xl text-center hidden">No issues found matching filters provided 😭</h1>
+
+  <div id="issueContainer">
 {% block issueBlock %}
 {% for element in issues %}
 {% set titleFormatted = element.title.replace("-", "").lower()%}
@@ -240,14 +240,14 @@
       }
       const element = 
       `
-      <div name="${issue.title}" class="issue ${issue.type} ${issue.title} ${issue.id} mt-2">
-      <div class="card gap-4">
+      <div name="${issue.title}" class="issue ${issue.type.toLowerCase().replace(' ', '-')} ${issue.title} ${issue.id} mt-2">
+      <div class="card">
     <h5 class="card-header"> ${issue.title}
       ${issue.is_resolved == true ? '<span class="badge text-bg-success float-right">Resolved</span>' : "" }
     </h5>
     <div class="card-body">
-      <h5 class="card-title"><span class="badge ${tag}">${issue.type}</span></h5>
-      <p class="card-text mb-2">${issue.description}</p>
+      <h5 class="card-title"><span class="badge ${tag}">${issue.type.toLowerCase()}</span></h5>
+      <p class="card-text">${issue.description}</p>
       <button  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal" name="${issue.id}" onclick="onModalOpen(name)">Update</button>
       ${page == "manage" && isAdmin == true && issue.is_resolved == false ?
       `<button name="${issue.id}" onclick="onResolve(name)" class="btn btn-success">Resolve</button>`
@@ -473,7 +473,7 @@
 
   
   const onTypeFilter = () => {
-    document.getElementById("emptyText").classList.add("hidden")
+
     var filterValue = event.target.value;
     var container = document.querySelectorAll("#issueContainer .issue");
     var allElementsHidden = 0;
@@ -493,14 +493,12 @@
     console.log(allElementsHidden, container.length)
     if (allElementsHidden === container.length) {
       console.log(allElementsHidden)
-      document.getElementById("emptyText").classList.remove("hidden")}
-    else document.getElementById("emptyText").classList.add("hidden")
+    }
 
   
     
   }
   const onSearchFilter = () => {
-    document.getElementById("emptyText").classList.add("hidden")
     var container = document.querySelectorAll("#issueContainer .issue");
     console.log(event.target.value)
     var currentValue = event.target.value.replace("-", " ").toLowerCase()
