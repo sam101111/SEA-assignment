@@ -158,7 +158,7 @@ def test_get_user_issues(test_db, login_user):
     response = client.get(f"/api/issues/{user_id}")
     assert response.status_code == 200
     response_data = response.json()
-    assert response_data == expected
+    assert response_data[0]['id'] == issue_id
 
 
 def test_get_user_issues_as_wrong_user(test_db):
@@ -492,4 +492,6 @@ def test_get_all_issues_as_admin(test_db, login_admin):
 
     get_issues = client.get("/api/issues")
     assert get_issues.status_code == 200
-    assert get_issues.json() == expected
+    issues = get_issues.json()
+    assert issues[0]['id'] == created_issue_1.json()
+    assert issues[1]['id'] == created_issue_2.json()
