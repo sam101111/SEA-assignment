@@ -49,8 +49,8 @@
 
   
 <form class="gap-2" method="post" action="/api/auth/login" target="preventRedirect" id="loginForm">
-    <input  type="email" name="email" class="form-control" id="searchFilter" placeholder="Enter email" required>
-    <input  type="password" name="password" class="form-control mt-2" id="searchFilter" placeholder="Enter password" required>
+    <input  type="email" name="email" class="form-control" id="emailInput" placeholder="Enter email" required>
+    <input  type="password" name="password" class="form-control mt-2" id="passwordInput" placeholder="Enter password" required>
     <button class="btn btn-primary  mt-8 w-full"  >Register</button>
 </form>
 <iframe name="preventRedirect" style="display: none;"></iframe>
@@ -60,8 +60,12 @@
 <script>
     document.getElementById("loginForm").addEventListener('submit', (event) => {
         event.preventDefault();
-        const alert = document.getElementById("loginAlert")
+        const alert = document.getElementById("loginAlert");
         const fromData = new FormData(event.target);
+        const email = document.getElementById("emailInput");
+        const password = document.getElementById("passwordInput");
+        var passwordPattern = new RegExp("/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/");
+        var emailPattern = new RegExp("/^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$/");
         fetch('/api/auth/register', {
             method: 'POST',
             body: fromData,
@@ -80,8 +84,24 @@
                     alert.textContent="Email entered is already registered"
                     break;
                 case 400:
-                    alert.setAttribute("class", "alert alert-danger text-pretty max-w-96")
-                    alert.textContent="Email or password entered is not valid format. passwords most contain at least: a digit from 1 to 9, one lower case letter, one upper case letter, one special character and password length must be between 8 to 16"
+                    if (/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/.test(password.value) == false && /^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$/.test(email.value) == false) {
+                        console.log(password.value)
+                        console.log(email.value, emailPattern.test(email.value))
+                        alert.setAttribute("class", "alert alert-danger text-pretty max-w-96")
+                        alert.textContent="Email and password entered is not valid format. passwords most contain at least: a digit from 1 to 9, one lower case letter, one upper case letter, one special character and password length must be between 8 to 16"
+
+                    }
+                    else if (/^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$/.test(email.value) == false){
+                        console.log(email.value)
+                        alert.setAttribute("class", "alert alert-danger text-pretty max-w-96")
+                        alert.textContent="Email  entered is not valid format."
+
+                    }
+                    else if (/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/.test(password.value) == false){
+                        alert.setAttribute("class", "alert alert-danger text-pretty max-w-96")
+                        alert.textContent="password entered is not valid format. passwords most contain at least: a digit from 1 to 9, one lower case letter, one upper case letter, one special character and password length must be between 8 to 16"
+                    }
+
                     break;
             }
             
