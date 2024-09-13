@@ -274,6 +274,10 @@
   }
   const deleteUser = (id) => {
     const alert = document.getElementById("updateIssueAlert");
+    var toast = document.getElementById("tostResponse");
+    var toastTitle = document.getElementById("toastTitle");
+    var toastBody = document.getElementById("toastBody");
+    var newToast = new bootstrap.Toast(toast);
     fetch(`/api/auth/${id}`, {
       method: "DELETE"
     })
@@ -281,16 +285,20 @@
       switch (res.status) {
         case 200:
           getUsers()
-          alert.setAttribute("class", "alert alert-success")
-          alert.textContent="Successfully deleted user, refresh to see changes 😊"
+          toastTitle.textContent = "Success"
+          toastBody.textContent = "Successfully deleted user 😊"
+          newToast.show()
           break;
         case 404:
           alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User already deleted by another admin 😅"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User already deleted by another admin"
+          newToast.show()
           break;
         case 403:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User does not have necessary permission 🚫"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User does not have necessary permission"
+          newToast.show()
           break;
 
       }
@@ -304,6 +312,10 @@
 
   const promote = (id) => {
     const alert = document.getElementById("updateIssueAlert");
+    var toast = document.getElementById("tostResponse");
+    var toastTitle = document.getElementById("toastTitle");
+    var toastBody = document.getElementById("toastBody");
+    var newToast = new bootstrap.Toast(toast);
     fetch(`/api/auth/promote/${id}`, {
       method: "PATCH"
     })
@@ -311,20 +323,24 @@
       switch (res.status) {
         case 200:
           getUsers()
-          alert.setAttribute("class", "alert alert-success")
-          alert.textContent="Successfully promoted user, refresh to see changes 😊"
+          toastTitle.textContent = "Success"
+          toastBody.textContent = "Successfully promoted user 😊"
+          newToast.show()
           break;
         case 404:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User has been deleted by another admin 😅"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User has been deleted by another admin"
+          newToast.show()
           break;
         case 403:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User does not have necessary permission 🚫"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User does not have necessary permission 🚫"
+          newToast.show()
           break;
         case 400:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User is already an admin 😅"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User is already an admin"
+          newToast.show()
           break;
       }
     
@@ -360,12 +376,13 @@
         case 200:
           {page == "manage" ? getIssues() : getIssuesByUser()}
           toastTitle.textContent = "Success"
-          toastBody.textContent = "Successfully updated issue, refresh to see changes 😊"
+          toastBody.textContent = "Successfully updated issue 😊"
           newToast.show()
           break;
         case 404:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="Issue already deleted by another admin 😅"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "Issue already deleted by another admin"
+          newToast.show()
           break; 
       }
 
@@ -379,6 +396,10 @@
 
 
   const onDelete = (id) => {
+    var toast = document.getElementById("tostResponse");
+    var toastTitle = document.getElementById("toastTitle");
+    var toastBody = document.getElementById("toastBody");
+    var newToast = new bootstrap.Toast(toast);
     const alert = document.getElementById("updateIssueAlert");
     fetch(`/api/issues/${id}`, {
       method: "DELETE"
@@ -387,17 +408,20 @@
       switch (res.status) {
         case 200:
           {page == "manage" ? getIssues() : getIssuesByUser()}
-          alert.setAttribute("class", "alert alert-success")
-          alert.textContent="Successfully deleted issue, refresh to see changes 😊"
+          toastTitle.textContent = "Success"
+          toastBody.textContent = "Successfully deleted issue 😊"
+          newToast.show()
           
           break;
         case 404:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="Issue already deleted by another admin 😅"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "Issue already deleted by another admin"
+          newToast.show()
           break; 
         case 403:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User does not have necessary permission"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User does not have necessary permission"
+          newToast.show()
           break; 
 
       }
@@ -410,6 +434,10 @@
   }
 
   const onResolve = (id) => {
+    var toast = document.getElementById("tostResponse");
+    var toastTitle = document.getElementById("toastTitle");
+    var toastBody = document.getElementById("toastBody");
+    var newToast = new bootstrap.Toast(toast);
     const alert = document.getElementById("updateIssueAlert");
     fetch(`/api/issues/resolve/${id}`, {
       method: "PATCH"
@@ -419,16 +447,19 @@
       switch (res.status) {
         case 200:
           {page == "manage" ? getIssues() : getIssuesByUser()}
-          alert.setAttribute("class", "alert alert-success")
-          alert.textContent="Successfully resolved issue, refresh to see changes 😊"
+          toastTitle.textContent = "Success"
+          toastBody.textContent = "Successfully resolved issue 😊"
+          newToast.show()
           break;
         case 404:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="Issue already resolved by another admin 😅"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "Issue already resolved by another admin"
+          newToast.show()
           break; 
         case 403:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User does not have necessary permission"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User does not have necessary permission"
+          newToast.show()
           break; 
 
       }
