@@ -2,6 +2,8 @@ from enum import Enum
 from pydantic import BaseModel
 from typing import Optional
 
+from app.schemas.user import GetAllUsersResponse
+
 
 class IssueType(str, Enum):
     SERVICE_REQUEST = "Service request"
@@ -14,18 +16,32 @@ class IssueBase(BaseModel):
     title: str
     type: IssueType
     description: str
+    
+    class Config:
+        orm_mode = True
+        from_attributes=True
+
 
 
 class GetIssuesByUserResponse(IssueBase):
     id: str
     user_id: str
     is_resolved: bool
-
+    user: GetAllUsersResponse
+    class Config:
+        orm_mode = True
+        from_attributes=True
 
 class GetIssuesResponse(IssueBase):
     id: str
     user_id: str
     is_resolved: bool
+    user: GetAllUsersResponse
+    
+    class Config:
+        orm_mode = True
+        from_attributes=True
+
 
 
 class CreateIssue(IssueBase):

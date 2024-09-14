@@ -9,12 +9,28 @@
   <div class="alert alert-primary hidden" role="alert" id="updateIssueAlert">
     text here lol
   </div>
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+
+      <div id="tostResponse" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto" id="toastTitle">Bootstrap</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastBody">
+          Hello, world! This is a toast message.
+        </div>
+      </div>
+    
+    </div>
+
+
   {% block filters %}
     <div>
 
       {% block title %}
         <h1 class="text-3xl">Your tickets</h1>
       {% endblock %}
+
         
         <div class="flex flex-row w-6/12 gap-2">
             
@@ -40,8 +56,8 @@
       </div>
     </div>
     {% endblock %}
-<div id="issueContainer">
-  <h1 id="emptyText" class="text-xl text-center hidden">No issues found matching filters provided 😭</h1>
+
+  <div id="issueContainer">
 {% block issueBlock %}
 {% for element in issues %}
 {% set titleFormatted = element.title.replace("-", "").lower()%}
@@ -103,24 +119,186 @@
 </div>
 
 <script>
+  const userId = JSON.parse('{{ user_id | tojson | safe }}');
+  const isAdmin = JSON.parse('{{ is_admin | tojson | safe }}');
+  const page = JSON.parse('{{ page | tojson | safe }}');
+
+  const getUsers = () => {
+    fetch(`/api/auth`, {
+      method: "GET",
+    })
+
+    .then(res => {
+      if (res.ok){
+        return res.json()
+        .then(data => {
+          
+          console.log(data)
+          refreshUsers(data)
+        })
+      }
+    }) .catch(err => {
+      console.log(err)
+    })
+
+  }
+  const refreshUsers = (users) => {
+    const container = document.getElementById('issueContainer');
+
+    container.innerHTML = '';
+  
+
+    users.forEach(user => {
+
+      const element = 
+      `
+      <div class="mt-2">
+<div class="card">
+    <h5 class="card-header"> ${user.email}</h5>
+    <div class="card-body">
+      <h5 class="card-title">
+        ${user.isAdmin == true ? '<span class="badge text-bg-info">Admin</span>' : '<span class="badge text-bg-secondary ">User</span>' }
+        
+  </h5>
+      
+    
+      ${isAdmin == true ? `<button  class="btn btn-danger"  name="${user.id}" onclick="deleteUser(name)">Delete</button>` : ''}
+      ${user.isAdmin == false && isAdmin == true ? `<button  class="btn btn-primary"  name="${user.id}" onclick="promote(name)">Promote to Admin</button>` : ''}
+      
+
+
+    </div>
+  
+</div>
+</div>
+</div>
+`
+      container.innerHTML += element;
+    })
+
+  }
+
+  const getIssues =  () => {
+    fetch(`/api/issues`, {
+      method: "GET",
+    })
+
+    .then(res => {
+      if (res.ok){
+        return res.json()
+        .then(data => {
+          
+          console.log(data)
+          refreshIssues(data)
+        })
+      }
+    }) .catch(err => {
+      console.log(err)
+    })
+  }
+
+  const getIssuesByUser =  () => {
+    
+    fetch(`/api/issues/${userId}`, {
+      method: "GET",
+    })
+
+    .then(res => {
+      if (res.ok){
+        return res.json()
+        .then(data => {
+          
+          console.log(data)
+          refreshIssues(data)
+        })
+      }
+    }) .catch(err => {
+      console.log(err)
+    })
+  }
+
+  const refreshIssues = (issues) => {
+    const container = document.getElementById('issueContainer');
+
+    container.innerHTML = '';
+  
+
+    issues.forEach(issue => {
+      switch (issue.type) {
+        case "Account and Access":
+          tag = "btn btn-warning"
+          break;
+        case "Service request":
+          tag = "btn btn-info"
+          break;
+        default:
+          tag = "btn btn-danger"
+          break;
+
+
+
+      }
+      const element = 
+      `
+      <div name="${issue.title}" class="issue ${issue.type.toLowerCase().replace(' ', '-')} ${issue.title} ${issue.id} mt-2">
+      <div class="card">
+    <h5 class="card-header"> ${issue.title}
+      ${issue.is_resolved == true ? '<span class="badge text-bg-success float-right">Resolved</span>' : "" }
+    </h5>
+    <div class="card-body">
+      <h5 class="card-title"><span class="badge ${tag}">${issue.type.toLowerCase()}</span></h5>
+      <p class="card-text">${issue.description}</p>
+      <button  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal" name="${issue.id}" onclick="onModalOpen(name)">Update</button>
+      ${page == "manage" && isAdmin == true && issue.is_resolved == false ?
+      `<button name="${issue.id}" onclick="onResolve(name)" class="btn btn-success">Resolve</button>`
+      :
+      ''
+    }
+    ${page == "manage" && isAdmin == true ?
+      `<button name="${issue.id}" onclick="onDelete(name)" class="btn btn-danger">Delete</button>`
+      :
+      ''
+    }
+      
+
+      <p class="float-right">Opened by: ${issue.user.email}</p>
+    </div>
+  
+</div>
+</div>
+</div>
+`
+      container.innerHTML += element;
+    })
+
+  }
   const deleteUser = (id) => {
     const alert = document.getElementById("updateIssueAlert");
+    var toast = document.getElementById("tostResponse");
+    var toastTitle = document.getElementById("toastTitle");
+    var toastBody = document.getElementById("toastBody");
+    var newToast = new bootstrap.Toast(toast);
     fetch(`/api/auth/${id}`, {
       method: "DELETE"
     })
     .then(res => {
       switch (res.status) {
         case 200:
-          alert.setAttribute("class", "alert alert-success")
-          alert.textContent="Successfully deleted user, refresh to see changes 😊"
+          getUsers()
+          toastTitle.textContent = "Success"
+          toastBody.textContent = "Successfully deleted user 😊"
+          newToast.show()
           break;
         case 404:
           alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User already deleted by another admin 😅"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User already deleted by another admin"
+          newToast.show()
           break;
         case 403:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User does not have necessary permission 🚫"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User does not have necessary permission"
+          newToast.show()
           break;
 
       }
@@ -134,26 +312,35 @@
 
   const promote = (id) => {
     const alert = document.getElementById("updateIssueAlert");
+    var toast = document.getElementById("tostResponse");
+    var toastTitle = document.getElementById("toastTitle");
+    var toastBody = document.getElementById("toastBody");
+    var newToast = new bootstrap.Toast(toast);
     fetch(`/api/auth/promote/${id}`, {
       method: "PATCH"
     })
     .then(res => {
       switch (res.status) {
         case 200:
-          alert.setAttribute("class", "alert alert-success")
-          alert.textContent="Successfully promoted user, refresh to see changes 😊"
+          getUsers()
+          toastTitle.textContent = "Success"
+          toastBody.textContent = "Successfully promoted user 😊"
+          newToast.show()
           break;
         case 404:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User has been deleted by another admin 😅"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User has been deleted by another admin"
+          newToast.show()
           break;
         case 403:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User does not have necessary permission 🚫"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User does not have necessary permission 🚫"
+          newToast.show()
           break;
         case 400:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User is already an admin 😅"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User is already an admin"
+          newToast.show()
           break;
       }
     
@@ -170,8 +357,12 @@
     
     event.preventDefault();
     const alert = document.getElementById("updateIssueAlert");
-    const updateForm = document.getElementById("updateForm")
-    const id = updateForm.getAttribute("issue-id")
+    var toast = document.getElementById("tostResponse");
+    var toastTitle = document.getElementById("toastTitle");
+    var toastBody = document.getElementById("toastBody");
+    var newToast = new bootstrap.Toast(toast);
+    const updateForm = document.getElementById("updateForm");
+    const id = updateForm.getAttribute("issue-id");
     const formData = new FormData(event.target);
     console.log(formData)
 
@@ -183,12 +374,15 @@
       console.log(res)
       switch (res.status) {
         case 200:
-          alert.setAttribute("class", "alert alert-success")
-          alert.textContent="Successfully updated issue, refresh to see changes 😊"
+          {page == "manage" ? getIssues() : getIssuesByUser()}
+          toastTitle.textContent = "Success"
+          toastBody.textContent = "Successfully updated issue 😊"
+          newToast.show()
           break;
         case 404:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="Issue already deleted by another admin 😅"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "Issue already deleted by another admin"
+          newToast.show()
           break; 
       }
 
@@ -202,24 +396,32 @@
 
 
   const onDelete = (id) => {
+    var toast = document.getElementById("tostResponse");
+    var toastTitle = document.getElementById("toastTitle");
+    var toastBody = document.getElementById("toastBody");
+    var newToast = new bootstrap.Toast(toast);
     const alert = document.getElementById("updateIssueAlert");
     fetch(`/api/issues/${id}`, {
       method: "DELETE"
     })
     .then(res => {
-      console.log(res)
       switch (res.status) {
         case 200:
-          alert.setAttribute("class", "alert alert-success")
-          alert.textContent="Successfully deleted issue, refresh to see changes 😊"
+          {page == "manage" ? getIssues() : getIssuesByUser()}
+          toastTitle.textContent = "Success"
+          toastBody.textContent = "Successfully deleted issue 😊"
+          newToast.show()
+          
           break;
         case 404:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="Issue already deleted by another admin 😅"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "Issue already deleted by another admin"
+          newToast.show()
           break; 
         case 403:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User does not have necessary permission"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User does not have necessary permission"
+          newToast.show()
           break; 
 
       }
@@ -232,6 +434,10 @@
   }
 
   const onResolve = (id) => {
+    var toast = document.getElementById("tostResponse");
+    var toastTitle = document.getElementById("toastTitle");
+    var toastBody = document.getElementById("toastBody");
+    var newToast = new bootstrap.Toast(toast);
     const alert = document.getElementById("updateIssueAlert");
     fetch(`/api/issues/resolve/${id}`, {
       method: "PATCH"
@@ -240,16 +446,20 @@
       console.log(res)
       switch (res.status) {
         case 200:
-          alert.setAttribute("class", "alert alert-success")
-          alert.textContent="Successfully resolved issue, refresh to see changes 😊"
+          {page == "manage" ? getIssues() : getIssuesByUser()}
+          toastTitle.textContent = "Success"
+          toastBody.textContent = "Successfully resolved issue 😊"
+          newToast.show()
           break;
         case 404:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="Issue already resolved by another admin 😅"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "Issue already resolved by another admin"
+          newToast.show()
           break; 
         case 403:
-          alert.setAttribute("class", "alert alert-danger")
-          alert.textContent="User does not have necessary permission"
+          toastTitle.textContent = "Error"
+          toastBody.textContent = "User does not have necessary permission"
+          newToast.show()
           break; 
 
       }
@@ -263,7 +473,7 @@
 
   
   const onTypeFilter = () => {
-    document.getElementById("emptyText").classList.add("hidden")
+
     var filterValue = event.target.value;
     var container = document.querySelectorAll("#issueContainer .issue");
     var allElementsHidden = 0;
@@ -283,14 +493,12 @@
     console.log(allElementsHidden, container.length)
     if (allElementsHidden === container.length) {
       console.log(allElementsHidden)
-      document.getElementById("emptyText").classList.remove("hidden")}
-    else document.getElementById("emptyText").classList.add("hidden")
+    }
 
   
     
   }
   const onSearchFilter = () => {
-    document.getElementById("emptyText").classList.add("hidden")
     var container = document.querySelectorAll("#issueContainer .issue");
     console.log(event.target.value)
     var currentValue = event.target.value.replace("-", " ").toLowerCase()

@@ -12,4 +12,4 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     isAdmin = Column(Boolean, default=False, nullable=False)
-    issues = relationship("Issue", back_populates="user")
+    issues = relationship("Issue", back_populates="user", cascade="all,delete")

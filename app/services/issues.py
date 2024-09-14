@@ -1,12 +1,14 @@
+from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import exists
 from app.models.Issuedb import Issue as IssueDb
 from app.models.Userdb import User as UserDb
-from app.schemas.issue import IssueType
+from app.schemas.issue import IssueType, GetIssuesResponse
 
 
-def get_all_issues(db: Session):
+def get_all_issues(db: Session) -> List[GetIssuesResponse]:
     return db.query(IssueDb).all()
+
 
 
 def get_issues_by_user(db: Session, id: str):

@@ -29,9 +29,10 @@
     {% set sessionStatus = "Login" %}
     {% set sessionStatusUrl = "/login" %}
     {% endif %}
-    {% set navElements = [{"title": "Create ticket", "url": "/"}, {"title": "Your issues", "url": "/issues"},
-    {"title": "Manage issues", "url": "/manage"}, {"title": "User Directory", "url": "/directory"} , {"title": "Register", "url": "/register"} ,{"title":
+    {% set navElements = [{"title": "Create ticket", "url": "/"}, {"title": "Your tickets", "url": "/issues"},
+    {"title": "Manage tickets", "url": "/manage"}, {"title": "User Directory", "url": "/directory"} , {"title": "Register", "url": "/register"} ,{"title":
     sessionStatus, "url": sessionStatusUrl }]%}
+    
     <div class="flex flex-col h-screen w-screen">
 
     <header class="bg-[#7079D9] py-4">
@@ -55,6 +56,12 @@
                                     <button type="submit">{{element.title}}</button>
                                 </form>
                             </li>
+                            {% elif element.title == "Register" %}
+                            <li class="p-2 m-2 text-lg cursor-pointer duration-300 hover:text-[#D3D3D3] ">
+                                    <button type="submit" onclick="logout()">{{element.title}}</button>
+             
+                            </li>
+
 
                             {% else %}
                            <li>
@@ -85,6 +92,7 @@
 
 
     <div class="flex-1 flex justify-center items-center mt-8 ">
+        
         
         {% block content%}
 
@@ -120,6 +128,22 @@
                         console.log(err)
                     })
             })
+
+            const logout = () => {
+                event.preventDefault();
+                const logoutToast = document.getElementById("logoutToast")
+                const toastInstance = bootstrap.Toast.getOrCreateInstance(logoutToast)
+                fetch('/api/auth/logout', {
+                    method: "POST"
+                })
+                    .then(res => {
+                        window.location.replace("/register");
+
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+            }
         </script>
 
 
