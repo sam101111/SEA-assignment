@@ -14,6 +14,10 @@ def seed(db: Session):
         UserDb(email="test4@test.com", password="test1A$c37"),
         UserDb(email="test5@test.com", password="test1A$c38"),
         UserDb(email="test6@test.com", password="test1A$c39"),
+        UserDb(email="test7@test.com", password="test1A$c40"),
+        UserDb(email="test8@test.com", password="test1A$c41"),
+        UserDb(email="test9@test.com", password="test1A$c42"),
+        UserDb(email="test10@test.com", password="test1A$c43"),
     ]
     # Adds the list of users to the database then commits it
     db.add_all(users)
@@ -24,6 +28,10 @@ def seed(db: Session):
     user_4 = db.query(UserDb).filter(UserDb.email == "test4@test.com").first()
     user_5 = db.query(UserDb).filter(UserDb.email == "test5@test.com").first()
     user_6 = db.query(UserDb).filter(UserDb.email == "test6@test.com").first()
+    user_7 = db.query(UserDb).filter(UserDb.email == "test7@test.com").first()
+    user_8 = db.query(UserDb).filter(UserDb.email == "test8@test.com").first()
+    user_9 = db.query(UserDb).filter(UserDb.email == "test9@test.com").first()
+    user_10 = db.query(UserDb).filter(UserDb.email == "test10@test.com").first()
 
     issues = [
         IssueDb(
@@ -65,6 +73,41 @@ def seed(db: Session):
             description="Requesting for a new account",
             type="Service request",
             user_id=user_6.id,
+            is_resolved=False,
+        ),
+        IssueDb(
+            title="can you create me an account",
+            description="Requesting for a new account",
+            type="Service request",
+            user_id=user_6.id,
+            is_resolved=False,
+        ),
+        IssueDb(
+            title="My laptop wont start",
+            description="Keep on seeing a blue screen",
+            type="Service request",
+            user_id=user_7.id,
+            is_resolved=False,
+        ),
+        IssueDb(
+            title="I forgot my password",
+            description="No idea what my password is",
+            type="Service request",
+            user_id=user_8.id,
+            is_resolved=False,
+        ),
+        IssueDb(
+            title="I forgot my password",
+            description="No idea what my password is",
+            type="Service request",
+            user_id=user_9.id,
+            is_resolved=False,
+        ),
+        IssueDb(
+            title="I forgot my password",
+            description="No idea what my password is",
+            type="Service request",
+            user_id=user_10.id,
             is_resolved=False,
         ),
     ]
