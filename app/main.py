@@ -8,20 +8,20 @@ from contextlib import asynccontextmanager
 
 
 # This seeds the database with mock data if there isn't already data in the database
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    db = SessionLocal()
-    try:
-        seed(db)
-        yield
-    finally:
-        db.close()
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     db = SessionLocal()
+#     try:
+#         seed(db)
+#         yield
+#     finally:
+#         db.close()
 
 
 # Creates the database tables and fastAPI instance
 Base.metadata.create_all(bind=engine)
 app = FastAPI(
-    lifespan=lifespan,
+    #lifespan=lifespan,
     title="Help desk API",
     description="Having problems ? try submitting a ticket 😊",
 )
